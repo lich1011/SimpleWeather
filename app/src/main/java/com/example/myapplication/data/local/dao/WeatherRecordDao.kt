@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherRecordDao {
-//    @Query("SELECT * FROM weather_records ORDER BY timestamp DESC LIMIT 1")
-//    fun getRecordForCity(city: String): Flow<List<WeatherRecordEntity>>
+    @Query("SELECT * FROM weather_records WHERE cityName = :cityName ORDER BY timestamp DESC")
+    fun getRecordForCity(cityName: String): Flow<List<WeatherRecordEntity>>
 
     @Insert
     suspend fun insert(record: WeatherRecordEntity)

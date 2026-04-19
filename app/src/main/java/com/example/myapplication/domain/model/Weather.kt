@@ -14,12 +14,13 @@ data class Weather(
     val windSpeed: Double,
     val temperature: Double,
     val weatherDesc: String,
+    val weatherIcon: String,
     val visibility: Int,
     val sunrise: Long,
     val sunset: Long
 ){
     val iconUrl: String
-        get() ="https://openweathermap.org/img/wn/${weatherDesc}@2x.png"
+        get() ="https://openweathermap.org/img/wn/${weatherIcon}@2x.png"
 }
 
 data class City(

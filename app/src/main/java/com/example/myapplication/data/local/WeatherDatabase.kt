@@ -9,7 +9,7 @@ import com.example.myapplication.data.local.entity.WeatherRecordEntity
 
 @Database(
     entities = [WeatherRecordEntity::class, CityEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class WeatherDatabase : RoomDatabase() {

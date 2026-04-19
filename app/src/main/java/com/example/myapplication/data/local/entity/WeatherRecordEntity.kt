@@ -19,6 +19,7 @@ data class WeatherRecordEntity(
     val windSpeed: Double,
     val temperature: Double,
     val weatherDesc: String,
+    val weatherIcon: String,
     val visibility: Int,
     val sunrise: Long,
     val sunset: Long

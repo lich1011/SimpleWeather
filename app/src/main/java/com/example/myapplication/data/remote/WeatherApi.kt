@@ -26,7 +26,7 @@ interface WeatherApi {
         @Query("cnt") cnt: Int = 40
     ): ForecastResponseDto
 
-//    companion object {
-//        const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
-//    }
+    companion object {
+        const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    }
 }

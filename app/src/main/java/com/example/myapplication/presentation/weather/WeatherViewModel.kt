@@ -50,8 +50,6 @@ class WeatherViewModel @Inject constructor(
 
 
     init {
-//        observeSavedCities()
-//        observeWeatherHistory()
         observeCities()
     }
 
@@ -74,26 +72,7 @@ class WeatherViewModel @Inject constructor(
         observeWeatherHistory(city.name)
     }
 
-    private fun observeSavedCities() {
-        viewModelScope.launch {
-            repository.getCities().collect { savedCities ->
-                _uiState.update { it.copy(cities = savedCities) }
-                // 自动加载默认城市或第一个城市的天气
-                val cityToLoad = savedCities.find { it.isDefault } ?: savedCities.firstOrNull()
-                cityToLoad?.let {
-                    fetchWeather(it.name)
-                }
-            }
-        }
-    }
 
-//    private fun observeWeatherHistory() {
-//        viewModelScope.launch {
-//            repository.getWeatherHistory().collect { history ->
-//                _uiState.update { it.copy(history = history) }
-//            }
-//        }
-//    }
 
     private fun observeWeatherHistory(cityName: String) {
         repository.getWeatherHistory(cityName)
@@ -119,10 +98,9 @@ class WeatherViewModel @Inject constructor(
             val forecastResult = repository.getForecast(cityName)
             forecastResult.onSuccess { forecast ->
                 _uiState.update { it.copy(forecast = forecast) }
+            }.onFailure { e ->
+                _event.emit(WeatherEvent.ShowError(e.message ?: "Failed to fetch forecast"))
             }
-//                .onFailure { e ->
-//                _uiState.update { it.copy(errorMessage = e.message ?: "Failed to fetch forecast") }
-//            }
 
             _uiState.update { it.copy(isLoading = false) }
         }

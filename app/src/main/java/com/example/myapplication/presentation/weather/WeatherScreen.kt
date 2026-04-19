@@ -1,14 +1,18 @@
 package com.example.myapplication.presentation.weather
 
-import android.R.attr.singleLine
-import android.app.appsearch.AppSearchSchema
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +36,7 @@ fun WeatherScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showAddCityDialog by remember { mutableStateOf(false) }
+    var showCityListSheet by remember { mutableStateOf(false) }
     
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -57,9 +62,20 @@ fun WeatherScreen(
         snackbarHost = {SnackbarHost(snackbarHostState)},
         topBar = {
             TopAppBar(
-                title = { Text("Weather") },
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { showCityListSheet = true }
+                    ) {
+                        Text(uiState.selectedCity?.name ?: "Weather")
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Select City")
+                    }
+                },
                 actions = {
-                    IconButton(onClick = { /* TODO: Refresh logic */ }) {
+                    IconButton(onClick = { showAddCityDialog = true }) {
+                        Icon(Icons.Default.Add, contentDescription = "Add City")
+                    }
+                    IconButton(onClick = { viewModel.refreshWeather() }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
                 }
@@ -197,7 +213,8 @@ fun ForecastCard(item: ForecastItem) {
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = item.dtTxt.split(" ")[1].substring(0, 5), fontSize = 12.sp)
+            val timeText = item.dtTxt.split(" ").getOrNull(1)?.take(5) ?: "--:--"
+            Text(text = timeText, fontSize = 12.sp)
             AsyncImage(
                 model = item.iconUrl,
                 contentDescription = null,
@@ -314,7 +331,7 @@ fun AddCityDialog(onDismiss: () -> Unit, onAddCity: (String) -> Unit){
 @Composable
 fun CityListSheet(
     cities: List<City>,
-    slectedCity: City?,
+    selectedCity: City?,
     onCitySelected: (City) -> Unit,
     onCityDeleted: (City) -> Unit,
     onSetDefaultCity: (City) -> Unit,
@@ -326,14 +343,31 @@ fun CityListSheet(
                 text = "Select a city",
                 style = MaterialTheme.typography.titleMedium
             )
-            cities.forEach {
-                city ->
+            Spacer(Modifier.height(8.dp))
+            cities.forEach { city ->
                 ListItem(
-                    headlineContent = {Text(city.name)},
-                    suo
+                    headlineContent = { Text(city.name) },
+                    supportingContent = if (city.isDefault) { { Text("Default") } } else null,
+                    modifier = Modifier.clickable {
+                        onCitySelected(city)
+                        onDismiss()
+                    },
+                    trailingContent = {
+                        Row {
+                            IconButton(onClick = { onSetDefaultCity(city) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Set Default",
+                                    tint = if (city.isDefault) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            IconButton(onClick = { onCityDeleted(city) }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                            }
+                        }
+                    }
                 )
             }
-
         }
         Spacer(Modifier.height(16.dp))
     }
@@ -343,4 +377,13 @@ private fun formatTime(timestamp: Long): String {
     return SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
 }
 
-private fun formatDate(dateString: String): String {}
+private fun formatDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
+        val date = inputFormat.parse(dateString)
+        date?.let { outputFormat.format(it) } ?: dateString
+    } catch (e: Exception) {
+        dateString
+    }
+}

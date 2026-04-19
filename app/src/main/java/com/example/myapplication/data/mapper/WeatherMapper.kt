@@ -33,6 +33,7 @@ fun WeatherResponseDto.toWeather(): Weather {
         windSpeed = wind.speed,
         temperature = main.temp,
         weatherDesc = weather.firstOrNull()?.description ?: "",
+        weatherIcon = weather.firstOrNull()?.icon ?: "",
         visibility = visibility,
         sunrise = sys.sunrise ?: 0L,
         sunset = sys.sunset ?: 0L
@@ -57,6 +58,7 @@ fun Weather.toEntity(): WeatherRecordEntity {
         windSpeed = windSpeed,
         temperature = temperature,
         weatherDesc = weatherDesc,
+        weatherIcon = weatherIcon,
         visibility = visibility,
         sunrise = sunrise,
         sunset = sunset
@@ -81,6 +83,7 @@ fun WeatherRecordEntity.toWeather(): Weather {
         windSpeed = windSpeed,
         temperature = temperature,
         weatherDesc = weatherDesc,
+        weatherIcon = weatherIcon,
         visibility = visibility,
         sunrise = sunrise,
         sunset = sunset
