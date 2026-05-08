@@ -2,16 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.example.myapplication"
+    namespace = "com.boomkin.simpleweather"
     compileSdk =36
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
+        applicationId = "com.boomkin.simpleweather"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -36,10 +35,8 @@ android {
     buildFeatures {
         compose = true
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -50,6 +47,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.core)
 
     // Room
     implementation(libs.androidx.room.runtime)
@@ -74,8 +72,8 @@ dependencies {
     //Coil
     implementation(libs.coil.compose)
 
-    //Gosn
-    implementation(libs.gosn)
+    //Gson
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
