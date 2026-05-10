@@ -25,6 +25,7 @@ data class WeatherUIState(
     val currentWeather: Weather? = null,
     val forecast: List<ForecastItem> = emptyList(),
     val history: List<Weather> = emptyList(),
+    val cityWeathers: Map<String, Weather> = emptyMap(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
@@ -54,16 +55,31 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun observeCities() {
-        repository.getCities().onEach {
-            cities ->
+        repository.getCities().onEach { cities ->
             _uiState.update { it.copy(cities = cities) }
-            val selected =_uiState.value.selectedCity
+            fetchAllCityWeathers(cities)
+            
+            val selected = _uiState.value.selectedCity
                 ?: cities.firstOrNull { it.isDefault}
                 ?: cities.firstOrNull()
             if(selected!=null && _uiState.value.selectedCity?.name != selected.name) {
                 selectCity(selected)
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun fetchAllCityWeathers(cities: List<City>) {
+        cities.forEach { city ->
+            viewModelScope.launch {
+                repository.getCurrentWeather(city.name).onSuccess { weather ->
+                    _uiState.update { 
+                        val newMap = it.cityWeathers.toMutableMap()
+                        newMap[city.name] = weather
+                        it.copy(cityWeathers = newMap)
+                    }
+                }
+            }
+        }
     }
 
     fun selectCity(city: City) {
