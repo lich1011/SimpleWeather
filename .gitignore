@@ -5,6 +5,7 @@
 .kotlin
 example
 process
+gradle/wrapper
 /local.properties
 /.idea/caches
 /.idea/libraries
