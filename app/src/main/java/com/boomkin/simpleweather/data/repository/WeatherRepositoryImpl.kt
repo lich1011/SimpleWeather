@@ -112,12 +112,7 @@ class WeatherRepositoryImpl @Inject constructor(
         // If the saved city matches the default city, update widget
         val defaultCity = cityDao.getDefaultCity()
         if (defaultCity != null && defaultCity.name == data.weather.cityName) {
-            try {
-                WeatherWidget().updateAll(context)
-                Timber.d("WeatherRepositoryImpl: Widget updated after cache save for default city ${defaultCity.name}")
-            } catch (e: Exception) {
-                Timber.e(e, "WeatherRepositoryImpl: Failed to update widget after saving cache")
-            }
+            triggerWidgetUpdate("saveToCache")
         }
     }
 

@@ -37,7 +37,7 @@ import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.appwidget.state.updateAppWidgetState
-import androidx.glance.appwidget.state.PreferencesGlanceStateDefinition
+import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
@@ -46,6 +46,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.currentState
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
+import androidx.glance.text.TextAlign
 
 object WeatherWidgetKeys {
     val KEY_HAS_WEATHER = booleanPreferencesKey("has_weather")
@@ -64,7 +65,7 @@ object WeatherWidgetStateUpdater {
             val manager = GlanceAppWidgetManager(context)
             val glanceIds = manager.getGlanceIds(WeatherWidget::class.java)
             for (glanceId in glanceIds) {
-                updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { prefs ->
+                updateAppWidgetState(context, glanceId) { prefs ->
                     if (weather != null) {
                         prefs[WeatherWidgetKeys.KEY_HAS_WEATHER] = true
                         prefs[WeatherWidgetKeys.KEY_CITY_NAME] = weather.cityName
@@ -107,45 +108,47 @@ class WeatherWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Responsive(setOf(GRID_1_2, GRID_1_4, GRID_2_2))
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val prefs = currentState<Preferences>()
-        val hasWeather = prefs[WeatherWidgetKeys.KEY_HAS_WEATHER] ?: false
-        val targetCityName = prefs[WeatherWidgetKeys.KEY_TARGET_CITY_NAME]
-
-        val weather = if (hasWeather) {
-            val cityName = prefs[WeatherWidgetKeys.KEY_CITY_NAME] ?: ""
-            val weatherDesc = prefs[WeatherWidgetKeys.KEY_WEATHER_DESC] ?: ""
-            val weatherTypeName = prefs[WeatherWidgetKeys.KEY_WEATHER_TYPE] ?: "CLOUDY"
-            val weatherType = try {
-                WeatherType.valueOf(weatherTypeName)
-            } catch (e: Exception) {
-                WeatherType.CLOUDY
-            }
-            val tempCurrent = prefs[WeatherWidgetKeys.KEY_TEMP_CURRENT] ?: 0.0
-            val feelsLike = prefs[WeatherWidgetKeys.KEY_FEELS_LIKE] ?: 0.0
-            val humidity = prefs[WeatherWidgetKeys.KEY_HUMIDITY] ?: 0
-
-            Weather(
-                cityName = cityName,
-                country = "",
-                tempCurrent = tempCurrent,
-                tempMin = tempCurrent,
-                tempMax = tempCurrent,
-                weatherDesc = weatherDesc,
-                weatherType = weatherType,
-                windSpeed = 0.0,
-                humidity = humidity,
-                pressure = 0,
-                feelsLike = feelsLike,
-                uvIndex = 0.0,
-                visibility = 0,
-                sunrise = 0L,
-                sunset = 0L
-            )
-        } else {
-            null
-        }
-
         provideContent {
+            val prefs = currentState<Preferences>()
+            val hasWeather = prefs[WeatherWidgetKeys.KEY_HAS_WEATHER] ?: false
+            val targetCityName = prefs[WeatherWidgetKeys.KEY_TARGET_CITY_NAME]
+
+            val weather = if (hasWeather) {
+                val cityName = prefs[WeatherWidgetKeys.KEY_CITY_NAME] ?: ""
+                val weatherDesc = prefs[WeatherWidgetKeys.KEY_WEATHER_DESC] ?: ""
+                val weatherTypeName = prefs[WeatherWidgetKeys.KEY_WEATHER_TYPE] ?: "CLOUDY"
+                val weatherType = try {
+                    WeatherType.valueOf(weatherTypeName)
+                } catch (e: Exception) {
+                    WeatherType.CLOUDY
+                }
+                val tempCurrent = prefs[WeatherWidgetKeys.KEY_TEMP_CURRENT] ?: 0.0
+                val feelsLike = prefs[WeatherWidgetKeys.KEY_FEELS_LIKE] ?: 0.0
+                val humidity = prefs[WeatherWidgetKeys.KEY_HUMIDITY] ?: 0
+
+                Weather(
+                    cityName = cityName,
+                    country = "",
+                    timestamp = 0L,
+                    date = "",
+                    tempCurrent = tempCurrent,
+                    tempMin = tempCurrent,
+                    tempMax = tempCurrent,
+                    feelsLike = feelsLike,
+                    humidity = humidity,
+                    pressure = 0,
+                    windSpeed = 0.0,
+                    weatherDesc = weatherDesc,
+                    weatherIcon = "",
+                    weatherType = weatherType,
+                    visibility = 0,
+                    sunrise = 0L,
+                    sunset = 0L
+                )
+            } else {
+                null
+            }
+
             val size = LocalSize.current
             WidgetContent(weather, targetCityName, size)
         }
@@ -212,7 +215,7 @@ class WeatherWidget : GlanceAppWidget() {
                         style = TextStyle(
                             color = ColorProvider(secondaryTextColor),
                             fontSize = 10.sp,
-                            textAlign = androidx.glance.text.TextAlign.Center
+                            textAlign = TextAlign.Center
                         )
                     )
                 }
