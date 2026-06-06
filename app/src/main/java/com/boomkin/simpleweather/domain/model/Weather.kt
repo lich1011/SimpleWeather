@@ -35,12 +35,12 @@ enum class WeatherType(
         /**
          * 从天气描述文本推断天气类型（中英文均可匹配）。
          */
-        fun fromDescription(desc: String): WeatherType {
-            return entries.firstOrNull { type ->
-                type.cnKeywords.any { desc.contains(it) } ||
-                type.enKeywords.any { desc.contains(it, ignoreCase = true) }
-            } ?: CLOUDY
-        }
+//        fun fromDescription(desc: String): WeatherType {
+//            return entries.firstOrNull { type ->
+//                type.cnKeywords.any { desc.contains(it) } ||
+//                type.enKeywords.any { desc.contains(it, ignoreCase = true) }
+//            } ?: CLOUDY
+//        }
 
         /**
          * 从 WMO weather code 直接映射天气类型（最可靠的方式）。
@@ -74,7 +74,9 @@ data class Weather(
     val weatherType: WeatherType,
     val visibility: Int,
     val sunrise: Long,
-    val sunset: Long
+    val sunset: Long,
+    val uvIndex: Double = 0.0,
+    val aqi: Int = 0
 )
 
 data class City(

@@ -1,5 +1,6 @@
 package com.boomkin.simpleweather.data.remote
 
+import com.boomkin.simpleweather.data.remote.dto.AirQualityResponseDto
 import com.boomkin.simpleweather.data.remote.dto.GeocodingResponseDto
 import com.boomkin.simpleweather.data.remote.dto.OpenMeteoResponseDto
 import retrofit2.http.GET
@@ -19,11 +20,18 @@ interface WeatherApi {
     suspend fun getWeather(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
-        @Query("current") current: String = "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,apparent_temperature,visibility",
+        @Query("current") current: String = "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,apparent_temperature,visibility,uv_index",
         @Query("hourly") hourly: String = "temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m",
         @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset",
         @Query("timezone") timezone: String = "auto"
     ): OpenMeteoResponseDto
+
+    @GET("https://geocoding-api.open-meteo.com/v1/air_quality")
+    suspend fun getAirQuality(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("current") current: String = "us_aqi"
+    ): AirQualityResponseDto
 
     companion object {
         const val BASE_URL = "https://api.open-meteo.com/"

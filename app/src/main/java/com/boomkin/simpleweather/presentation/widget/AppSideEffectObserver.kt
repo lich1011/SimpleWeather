@@ -2,6 +2,7 @@ package com.boomkin.simpleweather.presentation.widget
 
 import android.content.Context
 import com.boomkin.simpleweather.domain.model.Weather
+import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.domain.repository.WeatherRepository
 import com.boomkin.simpleweather.util.AppIconManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,6 +25,8 @@ class AppSideEffectObserver @Inject constructor(
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var isStarted = false
+    private var lastIconCity: String? = null
+    private var lastIconWeatherType: WeatherType? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
@@ -44,11 +47,16 @@ class AppSideEffectObserver @Inject constructor(
                 }
                 .collect { (weather, cityName) ->
                     if (weather != null) {
-                        Timber.d("AppSideEffectObserver: Detected change in default weather for ${weather.cityName}. Updating icon & widget.")
-                        // 1. Update app icon
-                        AppIconManager.updateAppIcon(context, weather.weatherType)
+                        if(cityName!=lastIconCity || weather.weatherType!= lastIconWeatherType){
+                            Timber.d("AppSideEffectObserver: Default weather type change for ${weather.cityName} -> ${weather.weatherType}.Update launcher icon.")
+                            AppIconManager.updateAppIcon(context, weather.weatherType)
+                            lastIconCity = cityName
+                            lastIconWeatherType = weather.weatherType
+                        }
                     } else {
                         Timber.d("AppSideEffectObserver: No default weather data for $cityName. Widget will show fallback.")
+                        lastIconCity = null
+                        lastIconWeatherType = null
                     }
                     
                     // 2. Trigger widget update via state updater

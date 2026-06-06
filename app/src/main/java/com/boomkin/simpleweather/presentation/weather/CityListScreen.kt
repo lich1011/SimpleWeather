@@ -35,7 +35,8 @@ fun CityListScreen(
     onCityClick: (String) -> Unit,
     onAddCityClick: (String) -> Unit,
     onReactivateCity: (City) -> Unit,
-    onDeleteCity: (City) -> Unit
+    onDeleteCity: (City) -> Unit,
+    onSetDefaultCity: (City) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -219,6 +220,21 @@ fun CityListScreen(
                                                         fontSize = 11.sp
                                                     )
                                                 }
+                                                if(city.isDefault){
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .clip(RoundedCornerShape(6.dp))
+                                                            .background(Color(0x33FBBF24))
+                                                            .padding(horizontal = 6.dp, vertical = 1.dp)
+                                                    ){
+                                                        Text(
+                                                            text = "默认",
+                                                            color = Color(0xFFFBBF24),
+                                                            fontSize = 9.sp,
+                                                            fontWeight = FontWeight.Bold
+                                                        )
+                                                    }
+                                                }
                                             }
                                             Text(
                                                 text = if (weather != null) "${weather.weatherDesc} • ${weather.weatherType.name}" else "加载中...",
@@ -231,7 +247,7 @@ fun CityListScreen(
                                     }
 
                                     if (weather != null) {
-                                        val aqi = 20 + (city.name.hashCode() % 80).absoluteValue
+                                        val aqi = weather.aqi
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -244,12 +260,22 @@ fun CityListScreen(
                                                     fontWeight = FontWeight.Light
                                                 )
                                                 Text(
-                                                    text = "AQI ≈$aqi",
+                                                    text = "AQI $aqi",
                                                     color = Color.White.copy(alpha = 0.3f),
                                                     fontSize = 9.sp,
                                                     fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                                                 )
                                             }
+
+                                            Text(
+                                                text = if (city.isDefault) "X" else "x",
+                                                fontSize = 18.sp,
+                                                color = if (city.isDefault) Color(0xFFFBBF24) else Color.White.copy(alpha = 0.45f),
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .clickable(enabled = !city.isDefault){onSetDefaultCity(city)}
+                                                    .padding(4.dp)
+                                            )
 
                                             // Delete Button
                                             IconButton(

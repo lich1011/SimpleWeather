@@ -85,7 +85,8 @@ fun OpenMeteoResponseDto.toWeather(cityName: String, country: String): Weather {
         weatherType = WeatherType.fromWmoCode(wmoCode),
         visibility = currentData?.visibility?.toInt() ?: 10000,
         sunrise = parseDailyTimeToEpoch(dailyData?.sunrise?.firstOrNull()),
-        sunset = parseDailyTimeToEpoch(dailyData?.sunset?.firstOrNull())
+        sunset = parseDailyTimeToEpoch(dailyData?.sunset?.firstOrNull()),
+        uvIndex = currentData?.uvIndex ?: 0.0
     )
 }
 

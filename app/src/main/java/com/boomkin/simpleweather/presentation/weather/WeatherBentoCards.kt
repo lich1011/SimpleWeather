@@ -57,16 +57,8 @@ fun WeatherStats(
     theme: WeatherTheme,
     modifier: Modifier = Modifier
 ) {
-    val aqi = remember(data.cityName) { 20 + (data.cityName.hashCode() % 80).absoluteValue }
-    val uvIndex = remember(data.weatherType, data.cityName) {
-        when (data.weatherType) {
-            WeatherType.SUNNY -> 8 + (data.cityName.hashCode() % 4).absoluteValue
-            WeatherType.RAINY -> 1 + (data.cityName.hashCode() % 2).absoluteValue
-            WeatherType.SNOWY -> 1
-            WeatherType.CLOUDY -> 3 + (data.cityName.hashCode() % 3).absoluteValue
-            WeatherType.STORM -> 2 + (data.cityName.hashCode() % 2).absoluteValue
-        }
-    }
+    val aqi = data.aqi
+    val uvIndex = data.uvIndex
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -323,7 +315,7 @@ fun HumidityCard(
 // 紫外线卡片 (包含半圆弧仪表盘指示器) — P1#4: 标注 (估算)
 @Composable
 fun UvCard(
-    uvIndex: Int,
+    uvIndex: Double,
     theme: WeatherTheme,
     modifier: Modifier = Modifier
 ) {
@@ -341,7 +333,7 @@ fun UvCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "紫外线 / UV INDEX (估算)",
+                text = "紫外线 / UV INDEX",
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -399,7 +391,7 @@ fun UvCard(
                     )
 
                     // 进度指示弧
-                    val uvProgress = minOf(1f, uvIndex / 11f)
+                    val uvProgress = minOf(1f, (uvIndex / 11.0).toFloat())
                     drawArc(
                         color = theme.primaryColor,
                         startAngle = 180f,
@@ -453,7 +445,7 @@ fun AqiCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "空气质量 / AQI (估算)",
+                text = "空气质量 / AQI",
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )

@@ -49,7 +49,8 @@ fun WeatherNavigation(viewModel: WeatherViewModel = hiltViewModel()) {
                             },
                             onAddCityClick = { cityName -> viewModel.addCity(cityName) },
                             onReactivateCity = { city -> viewModel.reactivateCity(city) },
-                            onDeleteCity = { city -> viewModel.deleteCity(city) }
+                            onDeleteCity = { city -> viewModel.deleteCity(city) },
+                            onSetDefaultCity = { city -> viewModel.setDefaultCity(city) }
                         )
                     }
                     "cities" -> {

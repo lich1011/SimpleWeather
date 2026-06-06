@@ -22,7 +22,8 @@ data class CurrentWeatherDto(
     @SerializedName("wind_speed_10m") val windSpeed: Double,
     @SerializedName("surface_pressure") val surfacePressure: Double?,
     @SerializedName("apparent_temperature") val apparentTemperature: Double?,
-    @SerializedName("visibility") val visibility: Double?
+    @SerializedName("visibility") val visibility: Double?,
+    @SerializedName("uv_index") val uvIndex: Double?
 )
 
 data class HourlyWeatherDto(
@@ -40,6 +41,18 @@ data class DailyWeatherDto(
     @SerializedName("weather_code") val weatherCode: List<Int>?,
     @SerializedName("sunrise") val sunrise: List<String>?,
     @SerializedName("sunset") val sunset: List<String>?
+)
+
+/**
+ * Open-Meteo Air Quality API response DTO
+ */
+
+data class AirQualityResponseDto(
+    @SerializedName("current") val current: AirQualityCurrentDto?
+)
+
+data class AirQualityCurrentDto(
+    @SerializedName("us_aqi") val usAqi: Int?
 )
 
 /**

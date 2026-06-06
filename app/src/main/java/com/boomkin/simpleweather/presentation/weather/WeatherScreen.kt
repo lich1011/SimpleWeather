@@ -186,7 +186,7 @@ fun CurrentLocationHeader(
         label = "angle"
     )
 
-    val aqi = remember(data.cityName) { 20 + (data.cityName.hashCode() % 80).absoluteValue }
+    val aqi = data.aqi
 
     Row(
         modifier = modifier
@@ -278,7 +278,7 @@ fun CurrentLocationHeader(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "AQI ≈$aqi",
+                text = "AQI $aqi",
                 color = Color.White.copy(alpha = 0.3f),
                 fontSize = 9.sp,
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace

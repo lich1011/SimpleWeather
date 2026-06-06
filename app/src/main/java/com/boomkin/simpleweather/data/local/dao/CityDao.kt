@@ -25,7 +25,7 @@ abstract class CityDao {
     @Query("SELECT * FROM cities WHERE name = :cityName")
     abstract suspend fun getCityByName(cityName: String): CityEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insertCity(city: CityEntity): Long
 
     @Query("UPDATE cities SET isActive = 0, isDefault = 0 WHERE id = :cityId")

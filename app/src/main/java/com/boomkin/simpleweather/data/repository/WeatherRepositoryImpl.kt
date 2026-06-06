@@ -37,8 +37,7 @@ class WeatherRepositoryImpl @Inject constructor(
     private val cityDao: CityDao,
     private val weatherRecordDao: WeatherRecordDao,
     private val cachedWeatherDao: CachedWeatherDao,
-    private val gson: Gson,
-    @ApplicationContext private val context: Context
+    private val gson: Gson
 ) : WeatherRepository {
 
     /**
@@ -61,8 +60,13 @@ class WeatherRepositoryImpl @Inject constructor(
 
             Timber.d("getWeatherData: Geocoding result -> ${result.name} (${result.latitude}, ${result.longitude})")
 
-            val response = api.getWeather(latitude = result.latitude, longitude = result.longitude)
-            val weather = response.toWeather(result.name, result.country ?: "")
+            val (response, aqi) = coroutineScope {
+                val forecastDeferred = async { api.getWeather(latitude = result.latitude, longitude = result.longitude) }
+                val aqiDeferred = async { fetchUsAqi(latitude = result.latitude, longitude = result.longitude) }
+                forecastDeferred.await() to aqiDeferred.await()
+            }
+
+            val weather = response.toWeather(result.name, result.country ?: "").copy(aqi =aqi)
             val daily = response.toForecastItems()
             val hourly = response.toHourlyForecastItems()
 
@@ -83,8 +87,13 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun getWeatherData(city: City): Result<WeatherData> {
         return try {
             Timber.d("getWeatherData: Fetching for ${city.name} at (${city.latitude}, ${city.longitude})")
-            val response = api.getWeather(latitude = city.latitude, longitude = city.longitude)
-            val weather = response.toWeather(city.name, city.country)
+            val (response, aqi) = coroutineScope {
+                val forecastDeferred = async { api.getWeather(latitude = city.latitude, longitude = city.longitude) }
+                val aqiDeferred = async { fetchUsAqi(latitude = city.latitude, longitude = city.longitude) }
+                forecastDeferred.await() to aqiDeferred.await()
+            }
+
+            val weather = response.toWeather(city.name, city.country).copy(aqi =aqi)
             val daily = response.toForecastItems()
             val hourly = response.toHourlyForecastItems()
 
@@ -108,12 +117,7 @@ class WeatherRepositoryImpl @Inject constructor(
             lastUpdated = System.currentTimeMillis()
         )
         cachedWeatherDao.insertCachedWeather(entity)
-        
-        // If the saved city matches the default city, update widget
-        val defaultCity = cityDao.getDefaultCity()
-        if (defaultCity != null && defaultCity.name == data.weather.cityName) {
-            triggerWidgetUpdate("saveToCache")
-        }
+
     }
 
     override fun getCachedWeatherDataFlow(cityName: String): Flow<WeatherData?> {
@@ -180,7 +184,6 @@ class WeatherRepositoryImpl @Inject constructor(
         if (defaultCity == null) {
             cityDao.setDefaultCity(city.id)
         }
-        triggerWidgetUpdate("reactivateCity")
     }
 
     /**
@@ -226,7 +229,6 @@ class WeatherRepositoryImpl @Inject constructor(
                 cityDao.setDefaultCity(addedCity.id)
             }
 
-            triggerWidgetUpdate("addCity")
             Result.success(addedCity)
         } catch (e: Exception) {
             Timber.e(e, "addCity failed for city: $cityName")
@@ -247,12 +249,10 @@ class WeatherRepositoryImpl @Inject constructor(
                 cityDao.setDefaultCity(newDefault.id)
             }
         }
-        triggerWidgetUpdate("deleteCity")
     }
 
     override suspend fun setDefaultCity(cityId: Int) {
         cityDao.setDefaultCity(cityId)
-        triggerWidgetUpdate("setDefaultCity")
     }
 
     override fun getWeatherHistory(cityName: String): Flow<List<Weather>> {
@@ -267,26 +267,13 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherRecordDao.deleteOldRecords(weather.cityName)
     }
 
-    private suspend fun triggerWidgetUpdate(tag: String) {
-        try {
-            val defaultCityEntity = cityDao.getDefaultCity() ?: cityDao.getAllCitiesSync().firstOrNull()
-            val defaultCityName = defaultCityEntity?.name
-            val weatherData = if (defaultCityName != null) {
-                cachedWeatherDao.getCachedWeather(defaultCityName)
-            } else null
-            
-            val weather = weatherData?.let {
-                try {
-                    gson.fromJson(it.weatherDataJson, Weather::class.java)
-                } catch (e: Exception) {
-                    null
-                }
-            }
-            
-            WeatherWidgetStateUpdater.updateWidgetState(context, weather, defaultCityName)
-            Timber.d("WeatherRepositoryImpl: Directly updated Glance widget state & UI from $tag (city: $defaultCityName)")
-        } catch (e: Exception) {
-            Timber.e(e, "WeatherRepositoryImpl: Failed to directly update Glance widget state from $tag")
+    private suspend fun fetchUsAqi(latitude: Double, longitude: Double): Int{
+        return try{
+            api.getAirQuality(latitude = latitude, longitude =longitude).current?.usAqi ?:0
+        }catch (e: Exception){
+            Timber.w(e, "fetchUsAqi failed for ($latitude,$longitude), default AQI to 0")
+            0
         }
     }
+
 }
