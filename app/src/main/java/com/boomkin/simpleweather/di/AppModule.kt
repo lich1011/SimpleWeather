@@ -3,6 +3,7 @@ package com.boomkin.simpleweather.di
 import android.app.Application
 import androidx.room.Room
 import com.boomkin.simpleweather.data.local.WeatherDatabase
+import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
 import com.boomkin.simpleweather.data.local.dao.CityDao
 import com.boomkin.simpleweather.data.local.dao.WeatherRecordDao
 import com.boomkin.simpleweather.data.remote.WeatherApi
@@ -12,8 +13,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.google.gson.Gson
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -22,9 +28,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApi(): WeatherApi {
+    fun provideOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor { message ->
+            Timber.tag("OkHttp").d(message)
+        }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeatherApi(client: OkHttpClient): WeatherApi {
         return Retrofit.Builder()
             .baseUrl(WeatherApi.BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApi::class.java)
@@ -32,13 +55,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGson(): Gson = Gson()
+
+    @Provides
+    @Singleton
     fun provideWeatherDatabase(app: Application): WeatherDatabase {
+        // TODO: 正式发布前需为每次 schema 变更编写正式 Migration，届时移除 fallbackToDestructiveMigration
         return Room.databaseBuilder(
             app,
             WeatherDatabase::class.java,
             "weather_db"
-        ).fallbackToDestructiveMigration()
-        .build()
+        )
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     @Provides
@@ -55,14 +84,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCachedWeatherDao(db: WeatherDatabase): CachedWeatherDao {
+        return db.cachedWeatherDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideWeatherRepository(
         api: WeatherApi,
         cityDao: CityDao,
-        weatherRecordDao: WeatherRecordDao
+        weatherRecordDao: WeatherRecordDao,
+        cachedWeatherDao: CachedWeatherDao,
+        gson: Gson
     ): WeatherRepository {
-        // Use Mock data for manual UI testing in VM
-        return com.boomkin.simpleweather.data.repository.FakeWeatherRepositoryImpl()
-        // Uncomment to use real data:
-        // return WeatherRepositoryImpl(api, cityDao, weatherRecordDao)
+        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao, gson)
     }
 }

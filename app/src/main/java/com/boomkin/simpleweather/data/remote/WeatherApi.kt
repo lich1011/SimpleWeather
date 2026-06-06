@@ -1,32 +1,31 @@
 package com.boomkin.simpleweather.data.remote
 
-import com.boomkin.simpleweather.data.remote.dto.ForecastResponseDto
-import com.boomkin.simpleweather.data.remote.dto.WeatherResponseDto
+import com.boomkin.simpleweather.data.remote.dto.GeocodingResponseDto
+import com.boomkin.simpleweather.data.remote.dto.OpenMeteoResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherApi {
 
-    @GET("weather")
-    suspend fun getCurrentWeather(
-//        @Query("lat") lat: Double,
-//        @Query("lon") lon: Double,
-        @Query("q") cityName: String,
-        @Query("appid") apiKey: String,
-        @Query("lang") lang: String = "zh_cn",
-        @Query("units") units: String = "metric"
-    ): WeatherResponseDto
+    //https://open-meteo.com/en/docs
+    @GET("https://geocoding-api.open-meteo.com/v1/search")
+    suspend fun searchCity(
+        @Query("name") name: String,
+        @Query("count") count: Int = 1,
+        @Query("language") language: String = "zh"
+    ): GeocodingResponseDto
 
-    @GET("forecast")
-    suspend fun getForecast(
-        @Query("q") cityName: String,
-        @Query("appid") apiKey: String,
-        @Query("lang") lang: String = "zh_cn",
-        @Query("units") units: String = "metric",
-        @Query("cnt") cnt: Int = 40
-    ): ForecastResponseDto
+    @GET("v1/forecast")
+    suspend fun getWeather(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("current") current: String = "temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure,apparent_temperature,visibility",
+        @Query("hourly") hourly: String = "temperature_2m,weather_code,relative_humidity_2m,wind_speed_10m",
+        @Query("daily") daily: String = "temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset",
+        @Query("timezone") timezone: String = "auto"
+    ): OpenMeteoResponseDto
 
     companion object {
-        const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+        const val BASE_URL = "https://api.open-meteo.com/"
     }
 }

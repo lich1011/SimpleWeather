@@ -13,4 +13,11 @@ interface WeatherRecordDao {
 
     @Insert
     suspend fun insert(record: WeatherRecordEntity)
+
+    @Query("""
+        DELETE FROM weather_records WHERE id NOT IN (
+            SELECT id FROM weather_records WHERE cityName = :cityName ORDER BY timestamp DESC LIMIT :keepCount
+        ) AND cityName = :cityName
+    """)
+    suspend fun deleteOldRecords(cityName: String, keepCount: Int = 20)
 }
