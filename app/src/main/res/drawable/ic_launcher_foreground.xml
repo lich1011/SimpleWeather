@@ -1,16 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    
-    <!-- Sun -->
+    <!-- Radiant active weather accent sphere layer -->
     <path
-        android:fillColor="#FFD54F"
-        android:pathData="M 68 22 A 18 18 0 1 0 68 58 A 18 18 0 1 0 68 22 Z" />
-        
-    <!-- Cloud -->
+        android:pathData="M 54 22 C 71.7 22 86 36.3 86 54 C 86 71.7 71.7 86 54 86 C 36.3 86 22 71.7 22 54 C 22 36.3 36.3 22 54 22 Z"
+        android:fillColor="#3B82F6"
+        android:fillAlpha="0.32" />
+
+    <!-- Warm Golden Sun Core with Rays -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 37,71 L 71,71 A 12,12 0 0,0 71,47 A 19,19 0 0,0 37,47 A 12,12 0 0,0 37,71 Z" />
+        android:pathData="M 54 14 L 54 20 M 54 60 L 54 66 M 30 40 L 36 40 M 76 40 L 82 40"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M 72 40 C 72 48.8 64.8 56 56 56 C 47.1 56 40 48.8 40 40 C 40 31.2 47.1 24 56 24 C 64.8 24 72 31.2 72 40 Z"
+        android:fillColor="#FBBF24" />
+
+    <!-- Organic Fluid Atmospheric Clouds overlapping Sun -->
+    <path
+        android:pathData="M 34 72 C 28.5 72 24 67.5 24 62 C 24 57.6 26.9 53.8 31 52.5 C 32.3 47.1 37.1 43 43 43 C 49.4 43 54.5 47.8 55.8 54 C 59.3 54.4 62 57.4 62 61 C 62 67.1 57.1 72 51 72 M 31 52.5 C 32.3 47.1 37.1 43 43 43 C 49.4 43 54.5 47.8 55.8 54"
+        android:fillColor="#E2E8F0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+
+    <!-- Flowing Precipitation droplets -->
+    <path
+        android:pathData="M 32 78 L 29 84 M 42 80 L 39 86 M 52 78 L 49 84"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+
+    <!-- Dynamic lightning arc bolt -->
+    <path
+        android:pathData="M 68 52 L 58 64 L 64 64 L 56 78"
+        android:strokeColor="#FACC15"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

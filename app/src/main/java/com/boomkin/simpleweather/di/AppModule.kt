@@ -1,6 +1,8 @@
 package com.boomkin.simpleweather.di
 
 import android.app.Application
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import androidx.room.Room
 import com.boomkin.simpleweather.data.local.WeatherDatabase
 import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
@@ -95,8 +97,9 @@ object AppModule {
         cityDao: CityDao,
         weatherRecordDao: WeatherRecordDao,
         cachedWeatherDao: CachedWeatherDao,
-        gson: Gson
+        gson: Gson,
+        @ApplicationContext context: Context
     ): WeatherRepository {
-        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao, gson)
+        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao, gson, context)
     }
 }

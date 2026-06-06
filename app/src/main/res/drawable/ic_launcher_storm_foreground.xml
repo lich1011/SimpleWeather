@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Radiant active weather accent sphere layer -->
+    <path
+        android:pathData="M 54 22 C 71.7 22 86 36.3 86 54 C 86 71.7 71.7 86 54 86 C 36.3 86 22 71.7 22 54 C 22 36.3 36.3 22 54 22 Z"
+        android:fillColor="#8B5CF6"
+        android:fillAlpha="0.25" />
+
+    <!-- Cloud -->
+    <path
+        android:pathData="M 36 62 C 30.5 62 26 57.5 26 52 C 26 47.6 28.9 43.8 33 42.5 C 34.3 37.1 39.1 33 45 33 C 51.4 33 56.5 37.8 57.8 44 C 61.3 44.4 64 47.4 64 51 C 64 57.1 59.1 62 53 62 Z"
+        android:fillColor="#94A3B8"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+
+    <!-- Lightning Bolt -->
+    <path
+        android:pathData="M 50 58 L 40 70 L 46 70 L 38 84"
+        android:strokeColor="#FACC15"
+        android:strokeWidth="3.0"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Rain droplets -->
+    <path
+        android:pathData="M 28 68 L 25 74 M 58 68 L 55 74"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="2.0"
+        android:strokeLineCap="round" />
+</vector>

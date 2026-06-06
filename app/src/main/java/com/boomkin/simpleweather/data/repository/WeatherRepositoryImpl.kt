@@ -1,5 +1,8 @@
 package com.boomkin.simpleweather.data.repository
 
+import android.content.Context
+import com.boomkin.simpleweather.presentation.widget.WeatherWidgetStateUpdater
+import dagger.hilt.android.qualifiers.ApplicationContext
 import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
 import com.boomkin.simpleweather.data.local.dao.CityDao
 import com.boomkin.simpleweather.data.local.dao.WeatherRecordDao
@@ -34,7 +37,8 @@ class WeatherRepositoryImpl @Inject constructor(
     private val cityDao: CityDao,
     private val weatherRecordDao: WeatherRecordDao,
     private val cachedWeatherDao: CachedWeatherDao,
-    private val gson: Gson
+    private val gson: Gson,
+    @ApplicationContext private val context: Context
 ) : WeatherRepository {
 
     /**
@@ -104,6 +108,17 @@ class WeatherRepositoryImpl @Inject constructor(
             lastUpdated = System.currentTimeMillis()
         )
         cachedWeatherDao.insertCachedWeather(entity)
+        
+        // If the saved city matches the default city, update widget
+        val defaultCity = cityDao.getDefaultCity()
+        if (defaultCity != null && defaultCity.name == data.weather.cityName) {
+            try {
+                WeatherWidget().updateAll(context)
+                Timber.d("WeatherRepositoryImpl: Widget updated after cache save for default city ${defaultCity.name}")
+            } catch (e: Exception) {
+                Timber.e(e, "WeatherRepositoryImpl: Failed to update widget after saving cache")
+            }
+        }
     }
 
     override fun getCachedWeatherDataFlow(cityName: String): Flow<WeatherData?> {
@@ -164,6 +179,13 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun reactivateCity(city: City) {
         Timber.d("reactivateCity: ${city.name}")
         cityDao.reactivateCity(city.id, System.currentTimeMillis())
+        
+        // If there is no active default city, set this reactivated city as default
+        val defaultCity = cityDao.getDefaultCity()
+        if (defaultCity == null) {
+            cityDao.setDefaultCity(city.id)
+        }
+        triggerWidgetUpdate("reactivateCity")
     }
 
     /**
@@ -183,25 +205,34 @@ class WeatherRepositoryImpl @Inject constructor(
 
             // 2. Check DB using the canonical (geocoded) name to prevent duplicates
             val existingCity = cityDao.getCityByName(canonicalName)
-            if (existingCity != null) {
+            val addedCity = if (existingCity != null) {
                 Timber.d("addCity: City $canonicalName already exists in DB (id=${existingCity.id})")
                 if (!existingCity.isActive) {
                     Timber.d("addCity: City $canonicalName was inactive. Reactivating.")
                     cityDao.reactivateCity(existingCity.id, System.currentTimeMillis())
                 }
-                return Result.success(existingCity.toCity())
+                existingCity.toCity()
+            } else {
+                // 3. Insert with coordinates cached
+                val newCity = CityEntity(
+                    name = canonicalName,
+                    country = result.country ?: "",
+                    latitude = result.latitude,
+                    longitude = result.longitude
+                )
+                Timber.d("addCity: Inserting new city: $canonicalName (${result.latitude}, ${result.longitude})")
+                val id = cityDao.insertCity(newCity)
+                newCity.copy(id = id.toInt()).toCity()
             }
 
-            // 3. Insert with coordinates cached
-            val newCity = CityEntity(
-                name = canonicalName,
-                country = result.country ?: "",
-                latitude = result.latitude,
-                longitude = result.longitude
-            )
-            Timber.d("addCity: Inserting new city: $canonicalName (${result.latitude}, ${result.longitude})")
-            val id = cityDao.insertCity(newCity)
-            Result.success(newCity.copy(id = id.toInt()).toCity())
+            // Check if there is currently a default city, if not set this one as default
+            val defaultCity = cityDao.getDefaultCity()
+            if (defaultCity == null) {
+                cityDao.setDefaultCity(addedCity.id)
+            }
+
+            triggerWidgetUpdate("addCity")
+            Result.success(addedCity)
         } catch (e: Exception) {
             Timber.e(e, "addCity failed for city: $cityName")
             Result.failure(e)
@@ -212,10 +243,21 @@ class WeatherRepositoryImpl @Inject constructor(
         Timber.d("deleteCity: ${city.name}")
         cityDao.softDeleteCity(city.id)
         cachedWeatherDao.deleteCachedWeather(city.name)
+
+        // If the deleted city was default, set another active city as default
+        if (city.isDefault) {
+            val remainingCities = cityDao.getAllCitiesSync()
+            if (remainingCities.isNotEmpty()) {
+                val newDefault = remainingCities.first()
+                cityDao.setDefaultCity(newDefault.id)
+            }
+        }
+        triggerWidgetUpdate("deleteCity")
     }
 
     override suspend fun setDefaultCity(cityId: Int) {
         cityDao.setDefaultCity(cityId)
+        triggerWidgetUpdate("setDefaultCity")
     }
 
     override fun getWeatherHistory(cityName: String): Flow<List<Weather>> {
@@ -228,5 +270,28 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherRecordDao.insert(weather.toEntity())
         // Cleanup old records, keeping only the 20 most recent per city
         weatherRecordDao.deleteOldRecords(weather.cityName)
+    }
+
+    private suspend fun triggerWidgetUpdate(tag: String) {
+        try {
+            val defaultCityEntity = cityDao.getDefaultCity() ?: cityDao.getAllCitiesSync().firstOrNull()
+            val defaultCityName = defaultCityEntity?.name
+            val weatherData = if (defaultCityName != null) {
+                cachedWeatherDao.getCachedWeather(defaultCityName)
+            } else null
+            
+            val weather = weatherData?.let {
+                try {
+                    gson.fromJson(it.weatherDataJson, Weather::class.java)
+                } catch (e: Exception) {
+                    null
+                }
+            }
+            
+            WeatherWidgetStateUpdater.updateWidgetState(context, weather, defaultCityName)
+            Timber.d("WeatherRepositoryImpl: Directly updated Glance widget state & UI from $tag (city: $defaultCityName)")
+        } catch (e: Exception) {
+            Timber.e(e, "WeatherRepositoryImpl: Failed to directly update Glance widget state from $tag")
+        }
     }
 }

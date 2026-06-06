@@ -151,11 +151,25 @@ fun CityListScreen(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(IntrinsicSize.Min)
                                     .clip(RoundedCornerShape(20.dp))
                                     .background(cardBg)
                                     .border(1.dp, cardBorder, RoundedCornerShape(20.dp))
                                     .clickable { onCityClick(city.name) }
                             ) {
+                                if (weather != null) {
+                                    WeatherParticleBackground(
+                                        weatherType = weather.weatherType,
+                                        modifier = Modifier.matchParentSize()
+                                    )
+                                    // Subtle overlay for readability
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .background(Color.Black.copy(alpha = 0.2f))
+                                    )
+                                }
+
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()

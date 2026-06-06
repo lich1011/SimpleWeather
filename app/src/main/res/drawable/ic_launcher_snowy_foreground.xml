@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Radiant active weather accent sphere layer -->
+    <path
+        android:pathData="M 54 22 C 71.7 22 86 36.3 86 54 C 86 71.7 71.7 86 54 86 C 36.3 86 22 71.7 22 54 C 22 36.3 36.3 22 54 22 Z"
+        android:fillColor="#22D3EE"
+        android:fillAlpha="0.25" />
+
+    <!-- Atmospheric Cloud -->
+    <path
+        android:pathData="M 38 64 C 32.5 64 28 59.5 28 54 C 28 49.6 30.9 45.8 35 44.5 C 36.3 39.1 41.1 35 47 35 C 53.4 35 58.5 39.8 59.8 46 C 63.3 46.4 66 49.4 66 53 C 66 59.1 61.1 64 55 64 Z"
+        android:fillColor="#E2E8F0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round" />
+
+    <!-- Snowflake indicators -->
+    <path
+        android:pathData="M 34 72 M 34 70 L 34 74 M 32 72 L 36 72 M 46 76 M 46 74 L 46 78 M 44 76 L 48 76 M 58 72 M 58 70 L 58 74 M 56 72 L 60 72"
+        android:strokeColor="#A5F3FC"
+        android:strokeWidth="2.0"
+        android:strokeLineCap="round" />
+</vector>

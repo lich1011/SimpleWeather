@@ -8,6 +8,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.boomkin.simpleweather.presentation.widget.AppSideEffectObserver
 import com.boomkin.simpleweather.worker.WeatherSyncWorker
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -20,6 +21,9 @@ class WeatherApp : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject
+    lateinit var appSideEffectObserver: AppSideEffectObserver
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -29,6 +33,7 @@ class WeatherApp : Application(), Configuration.Provider {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
         
+        appSideEffectObserver.start()
         setupPeriodicSync()
     }
 

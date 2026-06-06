@@ -43,7 +43,7 @@ fun WeatherParticleBackground(
     modifier: Modifier = Modifier
 ) {
     // Game loop tick state
-    var frameTick by remember { mutableStateOf(0L) }
+    var frameTick by remember { mutableLongStateOf(0L) }
     
     LaunchedEffect(weatherType) {
         while (isActive) {
@@ -56,9 +56,9 @@ fun WeatherParticleBackground(
     // Retain particles and animation values in state
     val particles = remember(weatherType) { mutableStateListOf<ComposeParticle>() }
     val clouds = remember(weatherType) { mutableStateListOf<ComposeCloud>() }
-    var sunRaysAngle by remember { mutableStateOf(0f) }
-    var lightningFlash by remember { mutableStateOf(0f) }
-    var lightningCooldown by remember { mutableStateOf(120) }
+    var sunRaysAngle by remember { mutableFloatStateOf(0f) }
+    var lightningFlash by remember { mutableFloatStateOf(0f) }
+    var lightningCooldown by remember { mutableIntStateOf(120) }
     var lightningBoltPoints by remember { mutableStateOf<List<Offset>>(emptyList()) }
 
     Canvas(modifier = modifier.fillMaxSize()) {

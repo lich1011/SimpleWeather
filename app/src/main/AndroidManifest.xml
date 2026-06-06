@@ -32,12 +32,94 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.SimpleWeather">
+        </activity>
+
+        <!-- Sunny Weather Alias (Enabled by default as initial launcher) -->
+        <activity-alias
+            android:name=".MainActivitySunny"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_sunny"
+            android:roundIcon="@mipmap/ic_launcher_sunny_round"
+            android:label="@string/app_name"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <!-- Rainy Weather Alias -->
+        <activity-alias
+            android:name=".MainActivityRainy"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_rainy"
+            android:roundIcon="@mipmap/ic_launcher_rainy_round"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Snowy Weather Alias -->
+        <activity-alias
+            android:name=".MainActivitySnowy"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_snowy"
+            android:roundIcon="@mipmap/ic_launcher_snowy_round"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Cloudy Weather Alias -->
+        <activity-alias
+            android:name=".MainActivityCloudy"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_cloudy"
+            android:roundIcon="@mipmap/ic_launcher_cloudy_round"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Storm Weather Alias -->
+        <activity-alias
+            android:name=".MainActivityStorm"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_storm"
+            android:roundIcon="@mipmap/ic_launcher_storm_round"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <receiver
+            android:name=".presentation.widget.WeatherWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>

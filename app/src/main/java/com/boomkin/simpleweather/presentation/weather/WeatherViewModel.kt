@@ -106,6 +106,9 @@ class WeatherViewModel @Inject constructor(
         observeSelectedCityCache(city)
         observeWeatherHistory(city.name)
         
+        // Automatically make the last selected city the default so it displays on the widget
+        setDefaultCity(city)
+        
         // Also trigger a network refresh in the background if we want the absolute latest,
         // or rely on pull-to-refresh to do that. We'll do a silent refresh.
         fetchWeatherSilently(city)
