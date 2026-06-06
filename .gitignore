@@ -1,6 +1,9 @@
 *.iml
 .gradle
 .idea
+.vscode
+example
+process
 /local.properties
 /.idea/caches
 /.idea/libraries
