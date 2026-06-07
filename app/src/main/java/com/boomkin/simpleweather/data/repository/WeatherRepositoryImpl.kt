@@ -2,8 +2,10 @@ package com.boomkin.simpleweather.data.repository
 
 import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
 import com.boomkin.simpleweather.data.local.dao.CityDao
+import com.boomkin.simpleweather.data.local.dao.GeocodingDao
 import com.boomkin.simpleweather.data.local.dao.WeatherRecordDao
 import com.boomkin.simpleweather.data.local.entity.CachedWeatherEntity
+import com.boomkin.simpleweather.data.local.entity.GeocodingEntity
 import com.boomkin.simpleweather.data.local.entity.CityEntity
 import com.boomkin.simpleweather.data.mapper.toCity
 import com.boomkin.simpleweather.data.mapper.toEntity
@@ -31,7 +33,8 @@ class WeatherRepositoryImpl @Inject constructor(
     private val api: WeatherApi,
     private val cityDao: CityDao,
     private val weatherRecordDao: WeatherRecordDao,
-    private val cachedWeatherDao: CachedWeatherDao
+    private val cachedWeatherDao: CachedWeatherDao,
+    private val geocodingDao: GeocodingDao
 ) : WeatherRepository {
 
     /**
@@ -39,14 +42,29 @@ class WeatherRepositoryImpl @Inject constructor(
      */
     override suspend fun getWeatherData(cityName: String): Result<WeatherData> {
         return try {
-            // Try to use cached coordinates first
+            // 1. Try to use cached coordinates from cities table first
             val cachedCity = cityDao.getCityByName(cityName)
             if (cachedCity != null && cachedCity.latitude != 0.0) {
                 Timber.d("getWeatherData: Using cached coordinates for ${cachedCity.name}")
                 return getWeatherData(cachedCity.toCity())
             }
 
-            // Fall back to geocoding
+            // 2. Try to use cached coordinates from geocoding cache next
+            val queryKey = cityName.lowercase().trim()
+            val cachedGeo = geocodingDao.getByQuery(queryKey)
+            if (cachedGeo != null && cachedGeo.latitude != 0.0) {
+                Timber.d("getWeatherData: Using cached coordinates from geocoding cache for ${cachedGeo.cityName}")
+                return getWeatherData(
+                    City(
+                        name = cachedGeo.cityName,
+                        country = cachedGeo.country,
+                        latitude = cachedGeo.latitude,
+                        longitude = cachedGeo.longitude
+                    )
+                )
+            }
+
+            // 3. Fall back to remote geocoding
             Timber.d("getWeatherData: Geocoding started for city: $cityName")
             val geoResponse = api.searchCity(name = cityName)
             val result = geoResponse.results?.firstOrNull()
@@ -60,12 +78,15 @@ class WeatherRepositoryImpl @Inject constructor(
                 forecastDeferred.await() to aqiDeferred.await()
             }
 
-            val weather = response.toWeather(result.name, result.country ?: "").copy(aqi =aqi)
+            val weather = response.toWeather(result.name, result.country ?: "").copy(aqi = aqi)
             val daily = response.toForecastItems()
             val hourly = response.toHourlyForecastItems()
 
             val weatherData = WeatherData(weather, daily, hourly)
             saveToCache(weatherData)
+
+            // Save resolved geocoding to cache
+            saveGeocodingToCache(cityName, result.name, result.country ?: "", result.latitude, result.longitude)
 
             Timber.i("getWeatherData: Success for $cityName — ${weather.tempCurrent}°C")
             Result.success(weatherData)
@@ -175,13 +196,36 @@ class WeatherRepositoryImpl @Inject constructor(
      */
     override suspend fun addCity(cityName: String): Result<City> {
         return try {
-            // 1. Geocode first to get the canonical name
-            Timber.d("addCity: Geocoding city name: $cityName")
-            val geoResponse = api.searchCity(name = cityName)
-            val result = geoResponse.results?.firstOrNull()
-                ?: throw Exception("City not found: $cityName")
+            // Check geocoding cache first
+            val queryKey = cityName.lowercase().trim()
+            val cachedGeo = geocodingDao.getByQuery(queryKey)
+            
+            val canonicalName: String
+            val country: String
+            val latitude: Double
+            val longitude: Double
 
-            val canonicalName = result.name
+            if (cachedGeo != null) {
+                Timber.d("addCity: Using cached geocoding for $cityName")
+                canonicalName = cachedGeo.cityName
+                country = cachedGeo.country
+                latitude = cachedGeo.latitude
+                longitude = cachedGeo.longitude
+            } else {
+                // 1. Geocode first to get the canonical name
+                Timber.d("addCity: Geocoding city name: $cityName")
+                val geoResponse = api.searchCity(name = cityName)
+                val result = geoResponse.results?.firstOrNull()
+                    ?: throw Exception("City not found: $cityName")
+
+                canonicalName = result.name
+                country = result.country ?: ""
+                latitude = result.latitude
+                longitude = result.longitude
+
+                saveGeocodingToCache(cityName, canonicalName, country, latitude, longitude)
+            }
+
             Timber.d("addCity: Canonical name resolved: $canonicalName")
 
             // 2. Check DB using the canonical (geocoded) name to prevent duplicates
@@ -197,11 +241,11 @@ class WeatherRepositoryImpl @Inject constructor(
                 // 3. Insert with coordinates cached
                 val newCity = CityEntity(
                     name = canonicalName,
-                    country = result.country ?: "",
-                    latitude = result.latitude,
-                    longitude = result.longitude
+                    country = country,
+                    latitude = latitude,
+                    longitude = longitude
                 )
-                Timber.d("addCity: Inserting new city: $canonicalName (${result.latitude}, ${result.longitude})")
+                Timber.d("addCity: Inserting new city: $canonicalName ($latitude, $longitude)")
                 val id = cityDao.insertCity(newCity)
                 newCity.copy(id = id.toInt()).toCity()
             }
@@ -256,6 +300,43 @@ class WeatherRepositoryImpl @Inject constructor(
         }catch (e: Exception){
             Timber.w(e, "fetchUsAqi failed for ($latitude,$longitude), default AQI to 0")
             0
+        }
+    }
+
+    private suspend fun saveGeocodingToCache(
+        query: String,
+        cityName: String,
+        country: String,
+        latitude: Double,
+        longitude: Double
+    ) {
+        try {
+            val queryKey = query.lowercase().trim()
+            val canonicalKey = cityName.lowercase().trim()
+            
+            geocodingDao.insert(
+                GeocodingEntity(
+                    query = queryKey,
+                    cityName = cityName,
+                    country = country,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            )
+            
+            if (queryKey != canonicalKey) {
+                geocodingDao.insert(
+                    GeocodingEntity(
+                        query = canonicalKey,
+                        cityName = cityName,
+                        country = country,
+                        latitude = latitude,
+                        longitude = longitude
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to save geocoding to cache for query=$query, city=$cityName")
         }
     }
 

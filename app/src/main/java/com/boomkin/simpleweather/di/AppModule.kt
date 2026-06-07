@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.boomkin.simpleweather.data.local.WeatherDatabase
 import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
 import com.boomkin.simpleweather.data.local.dao.CityDao
+import com.boomkin.simpleweather.data.local.dao.GeocodingDao
 import com.boomkin.simpleweather.data.local.dao.WeatherRecordDao
 import com.boomkin.simpleweather.data.remote.WeatherApi
 import com.boomkin.simpleweather.data.repository.WeatherRepositoryImpl
@@ -60,12 +61,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideWeatherDatabase(app: Application): WeatherDatabase {
-        // TODO: 正式发布前需为每次 schema 变更编写正式 Migration，届时移除 fallbackToDestructiveMigration
         return Room.databaseBuilder(
             app,
             WeatherDatabase::class.java,
             "weather_db"
         )
+            .addMigrations(WeatherDatabase.MIGRATION_5_6, WeatherDatabase.MIGRATION_6_7)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
@@ -90,12 +91,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGeocodingDao(db: WeatherDatabase): GeocodingDao {
+        return db.geocodingDao()
+    }
+
+    @Provides
+    @Singleton
     fun provideWeatherRepository(
         api: WeatherApi,
         cityDao: CityDao,
         weatherRecordDao: WeatherRecordDao,
         cachedWeatherDao: CachedWeatherDao,
+        geocodingDao: GeocodingDao
     ): WeatherRepository {
-        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao)
+        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao, geocodingDao)
     }
 }
