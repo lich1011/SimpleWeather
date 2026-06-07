@@ -87,6 +87,7 @@ fun OpenMeteoResponseDto.toWeather(cityName: String, country: String): Weather {
         sunrise = parseDailyTimeToEpoch(dailyData?.sunrise?.firstOrNull()),
         sunset = parseDailyTimeToEpoch(dailyData?.sunset?.firstOrNull()),
         uvIndex = currentData?.uvIndex ?: 0.0
+
     )
 }
 
@@ -192,7 +193,11 @@ fun WeatherRecordEntity.toWeather(): Weather {
         windSpeed = windSpeed,
         weatherDesc = weatherDesc,
         weatherIcon = weatherIcon,
-        weatherType = try { WeatherType.valueOf(weatherType) } catch (_: Exception) { WeatherType.CLOUDY },
+        weatherType = try {
+            WeatherType.valueOf(weatherType)
+        } catch (_: Exception) {
+            WeatherType.CLOUDY
+        },
         visibility = visibility,
         sunrise = sunrise,
         sunset = sunset

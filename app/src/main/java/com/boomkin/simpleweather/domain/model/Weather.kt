@@ -76,7 +76,7 @@ data class Weather(
     val sunrise: Long,
     val sunset: Long,
     val uvIndex: Double = 0.0,
-    val aqi: Int = 0
+    val aqi: Int? = null
 )
 
 data class City(

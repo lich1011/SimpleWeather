@@ -72,7 +72,10 @@ fun WeatherHomeScreen(
 
             Box(modifier = Modifier.fillMaxSize()) {
                 // 1. 底层沉浸式天气粒子背景
-                WeatherParticleBackground(weatherType = weather.weatherType, modifier = Modifier.fillMaxSize())
+                WeatherParticleBackground(
+                    weatherType = weather.weatherType,
+                    modifier = Modifier.fillMaxSize()
+                )
 
                 // 2. 气象色彩渐变叠加层
                 Box(
@@ -105,7 +108,11 @@ fun WeatherHomeScreen(
 
                     // 首页头部定位栏
                     StaggeredAnimatedVisibility(visible, 0) {
-                        CurrentLocationHeader(data = weather, theme = theme, onBackClick = onNavigateToCities)
+                        CurrentLocationHeader(
+                            data = weather,
+                            theme = theme,
+                            onBackClick = onNavigateToCities
+                        )
                     }
 
                     // 气象巨幅 Hero 卡片
@@ -171,7 +178,11 @@ fun WeatherHomeScreen(
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.select_city_prompt), color = Color.White.copy(alpha = 0.5f), fontSize = 14.sp)
+                Text(
+                    stringResource(R.string.select_city_prompt),
+                    color = Color.White.copy(alpha = 0.5f),
+                    fontSize = 14.sp
+                )
             }
         }
 
@@ -195,7 +206,11 @@ fun StaggeredAnimatedVisibility(
         visible = visible,
         enter = slideInVertically(
             initialOffsetY = { 80 },
-            animationSpec = tween(durationMillis = 500, delayMillis = delayMillis, easing = FastOutSlowInEasing)
+            animationSpec = tween(
+                durationMillis = 500,
+                delayMillis = delayMillis,
+                easing = FastOutSlowInEasing
+            )
         ) + fadeIn(
             animationSpec = tween(durationMillis = 500, delayMillis = delayMillis)
         ),
@@ -271,7 +286,9 @@ fun CurrentLocationHeader(
                     painter = painterResource(id = R.drawable.ic_compass),
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.8f),
-                    modifier = Modifier.size(18.dp).rotate(compassAngle)
+                    modifier = Modifier
+                        .size(18.dp)
+                        .rotate(compassAngle)
                 )
             }
 
@@ -319,7 +336,10 @@ fun CurrentLocationHeader(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.aqi_format, aqi),
+                text = if (aqi != null) stringResource(
+                    R.string.aqi_format,
+                    aqi
+                ) else stringResource(R.string.aqi_unavailable_short),
                 color = Color.White.copy(alpha = 0.3f),
                 fontSize = 9.sp,
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
@@ -369,7 +389,7 @@ fun TodayDetailsCard(
                         fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                     )
                 }
-                
+
                 Text(
                     text = stringResource(R.string.expand_more_label),
                     color = theme.primaryColor,
@@ -385,12 +405,28 @@ fun TodayDetailsCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val stats = listOf(
-                    Triple(painterResource(R.drawable.vd_weather_sunny), stringResource(R.string.temp_celsius_format, data.tempCurrent.toInt()), stringResource(R.string.temp_label)),
-                    Triple(painterResource(R.drawable.ic_compass), stringResource(R.string.temp_celsius_format, data.feelsLike.toInt()), stringResource(R.string.feels_like_label)),
-                    Triple(painterResource(R.drawable.ic_drop), stringResource(R.string.humidity_percent_format, data.humidity), stringResource(R.string.humidity_label)),
-                    Triple(painterResource(R.drawable.ic_sparkle), data.aqi.toString(), stringResource(R.string.aqi_label))
+                    Triple(
+                        painterResource(R.drawable.vd_weather_sunny),
+                        stringResource(R.string.temp_celsius_format, data.tempCurrent.toInt()),
+                        stringResource(R.string.temp_label)
+                    ),
+                    Triple(
+                        painterResource(R.drawable.ic_compass),
+                        stringResource(R.string.temp_celsius_format, data.feelsLike.toInt()),
+                        stringResource(R.string.feels_like_label)
+                    ),
+                    Triple(
+                        painterResource(R.drawable.ic_drop),
+                        stringResource(R.string.humidity_percent_format, data.humidity),
+                        stringResource(R.string.humidity_label)
+                    ),
+                    Triple(
+                        painterResource(R.drawable.ic_sparkle),
+                        data.aqi?.toString() ?: "-",
+                        stringResource(R.string.aqi_label)
+                    )
                 )
-                
+
                 stats.forEach { (painter, value, label) ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -399,7 +435,9 @@ fun TodayDetailsCard(
                         Icon(
                             painter = painter,
                             contentDescription = null,
-                            tint = if (painter == painterResource(R.drawable.vd_weather_sunny)) theme.primaryColor else Color.White.copy(alpha = 0.8f),
+                            tint = if (painter == painterResource(R.drawable.vd_weather_sunny)) theme.primaryColor else Color.White.copy(
+                                alpha = 0.8f
+                            ),
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.height(4.dp))

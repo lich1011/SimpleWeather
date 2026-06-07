@@ -276,7 +276,7 @@ fun CityListScreen(
                                                      fontWeight = FontWeight.Light
                                                  )
                                                  Text(
-                                                     text = stringResource(R.string.aqi_format, aqi),
+                                                     text = if(aqi!=null) stringResource(R.string.aqi_format, aqi) else stringResource(R.string.aqi_unavailable_short),
                                                      color = Color.White.copy(alpha = 0.3f),
                                                      fontSize = 9.sp,
                                                      fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace

@@ -52,7 +52,7 @@ data class AirQualityResponseDto(
 )
 
 data class AirQualityCurrentDto(
-    @SerializedName("us_aqi") val usAqi: Int?
+    @SerializedName("us_aqi") val usAqi: Double?
 )
 
 /**

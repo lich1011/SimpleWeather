@@ -85,7 +85,11 @@ fun SafetyAdviceCard(
 
         val adviceText = when (data.weatherType) {
             WeatherType.STORM -> stringResource(R.string.safety_advice_storm, data.windSpeed)
-            WeatherType.SNOWY -> stringResource(R.string.safety_advice_snowy, data.feelsLike.toInt())
+            WeatherType.SNOWY -> stringResource(
+                R.string.safety_advice_snowy,
+                data.feelsLike.toInt()
+            )
+
             WeatherType.SUNNY -> stringResource(R.string.safety_advice_sunny)
             WeatherType.RAINY -> stringResource(R.string.safety_advice_rainy, data.humidity)
             WeatherType.CLOUDY -> stringResource(R.string.safety_advice_cloudy)

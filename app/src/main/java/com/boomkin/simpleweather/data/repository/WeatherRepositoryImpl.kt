@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class WeatherRepositoryImpl @Inject constructor(
     private val api: WeatherApi,
@@ -294,12 +295,12 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherRecordDao.deleteOldRecords(weather.cityName)
     }
 
-    private suspend fun fetchUsAqi(latitude: Double, longitude: Double): Int{
+    private suspend fun fetchUsAqi(latitude: Double, longitude: Double): Int?{
         return try{
-            api.getAirQuality(latitude = latitude, longitude =longitude).current?.usAqi ?:0
+            api.getAirQuality(latitude = latitude, longitude =longitude).current?.usAqi?.roundToInt()
         }catch (e: Exception){
             Timber.w(e, "fetchUsAqi failed for ($latitude,$longitude), default AQI to 0")
-            0
+            null
         }
     }
 

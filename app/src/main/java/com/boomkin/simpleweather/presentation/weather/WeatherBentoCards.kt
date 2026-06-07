@@ -145,7 +145,9 @@ fun WindCard(
                     )
                 }
                 Text(
-                    text = if (data.windSpeed > 5.0) stringResource(R.string.wind_strong) else stringResource(R.string.wind_gentle),
+                    text = if (data.windSpeed > 5.0) stringResource(R.string.wind_strong) else stringResource(
+                        R.string.wind_gentle
+                    ),
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -299,9 +301,21 @@ fun HumidityCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(R.string.dry_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
-                Text(stringResource(R.string.optimum_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
-                Text(stringResource(R.string.humid_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
+                Text(
+                    stringResource(R.string.dry_label),
+                    color = Color.White.copy(alpha = 0.4f),
+                    fontSize = 8.sp
+                )
+                Text(
+                    stringResource(R.string.optimum_label),
+                    color = Color.White.copy(alpha = 0.4f),
+                    fontSize = 8.sp
+                )
+                Text(
+                    stringResource(R.string.humid_label),
+                    color = Color.White.copy(alpha = 0.4f),
+                    fontSize = 8.sp
+                )
             }
             Spacer(modifier = Modifier.height(2.dp))
             Row(
@@ -310,9 +324,18 @@ fun HumidityCard(
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
             ) {
-                Box(modifier = Modifier.weight(1f).fillMaxHeight().background(Color(0x80FBBF24)))
-                Box(modifier = Modifier.weight(0.75f).fillMaxHeight().background(Color(0x8034D399)))
-                Box(modifier = Modifier.weight(1.25f).fillMaxHeight().background(Color(0xFF3498DB)))
+                Box(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .background(Color(0x80FBBF24)))
+                Box(modifier = Modifier
+                    .weight(0.75f)
+                    .fillMaxHeight()
+                    .background(Color(0x8034D399)))
+                Box(modifier = Modifier
+                    .weight(1.25f)
+                    .fillMaxHeight()
+                    .background(Color(0xFF3498DB)))
             }
         }
     }
@@ -424,23 +447,27 @@ fun UvCard(
 // 空气质量卡片 (AQI 彩色滑动条) — P1#4: 标注 (估算)
 @Composable
 fun AqiCard(
-    aqi: Int,
+    aqi: Int?,
     theme: WeatherTheme,
     modifier: Modifier = Modifier
 ) {
+    val aqiValue = aqi ?: 0
     val aqiStatus = when {
-        aqi <= 50 -> stringResource(R.string.aqi_excellent_en)
-        aqi <= 100 -> stringResource(R.string.aqi_good_en)
+        aqi == null -> stringResource(R.string.aqi_unavailable)
+        aqiValue <= 50 -> stringResource(R.string.aqi_excellent_en)
+        aqiValue <= 100 -> stringResource(R.string.aqi_good_en)
         else -> stringResource(R.string.aqi_moderate_en)
     }
     val aqiColor = when {
-        aqi <= 50 -> Color(0xFF4ADE80)
-        aqi <= 100 -> Color(0xFFFBBF24)
+        aqi == null -> Color(0xFF94A3B8)
+        aqiValue <= 50 -> Color(0xFF4ADE80)
+        aqiValue <= 100 -> Color(0xFFFBBF24)
         else -> Color(0xFFEF4444)
     }
     val aqiLabel = when {
-        aqi <= 50 -> stringResource(R.string.aqi_excellent_cn)
-        aqi <= 100 -> stringResource(R.string.aqi_good_cn)
+        aqi == null -> stringResource(R.string.aqi_unavailable_short)
+        aqiValue <= 50 -> stringResource(R.string.aqi_excellent_cn)
+        aqiValue <= 100 -> stringResource(R.string.aqi_good_cn)
         else -> stringResource(R.string.aqi_moderate_cn)
     }
 
@@ -467,7 +494,7 @@ fun AqiCard(
             Column {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
-                        text = "$aqi",
+                        text = if (aqi != null) "$aqiValue" else "-",
                         color = Color.White,
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold
@@ -522,12 +549,27 @@ fun AqiCard(
                     .clip(RoundedCornerShape(3.dp))
             ) {
                 Row(modifier = Modifier.fillMaxSize()) {
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(Color(0xFF4ADE80)))
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(Color(0xFFFBBF24)))
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().background(Color(0xFFEF4444)))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(Color(0xFF4ADE80))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(Color(0xFFFBBF24))
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .background(Color(0xFFEF4444))
+                    )
                 }
 
-                val ratio = minOf(1f, aqi / 150f)
+                val ratio = if (aqi != null) minOf(1f, aqiValue / 150f) else 0f
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterStart)
@@ -549,9 +591,21 @@ fun AqiCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(R.string.aqi_scale_excellent), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
-                Text(stringResource(R.string.aqi_scale_good), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
-                Text(stringResource(R.string.aqi_scale_bad), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
+                Text(
+                    stringResource(R.string.aqi_scale_excellent),
+                    color = Color.White.copy(alpha = 0.3f),
+                    fontSize = 8.sp
+                )
+                Text(
+                    stringResource(R.string.aqi_scale_good),
+                    color = Color.White.copy(alpha = 0.3f),
+                    fontSize = 8.sp
+                )
+                Text(
+                    stringResource(R.string.aqi_scale_bad),
+                    color = Color.White.copy(alpha = 0.3f),
+                    fontSize = 8.sp
+                )
             }
         }
     }
@@ -613,13 +667,17 @@ fun SolarCycleCard(
 
                 // 实时太阳进度计算
                 val currentSec = System.currentTimeMillis() / 1000
-                val progress = if (currentSec < data.sunrise) 0f else if (currentSec > data.sunset) 1f else (currentSec - data.sunrise).toFloat() / (data.sunset - data.sunrise).toFloat()
+                val progress =
+                    if (currentSec < data.sunrise) 0f else if (currentSec > data.sunset) 1f else (currentSec - data.sunrise).toFloat() / (data.sunset - data.sunrise).toFloat()
 
                 // 贝塞尔二次曲线计算 B(t)
                 val t = progress
-                val p0x = 10f; val p0y = h - 20f
-                val p1x = w / 2f; val p1y = -10f
-                val p2x = w - 10f; val p2y = h - 20f
+                val p0x = 10f;
+                val p0y = h - 20f
+                val p1x = w / 2f;
+                val p1y = -10f
+                val p2x = w - 10f;
+                val p2y = h - 20f
 
                 val sunX = (1 - t) * (1 - t) * p0x + 2 * (1 - t) * t * p1x + t * t * p2x
                 val sunY = (1 - t) * (1 - t) * p0y + 2 * (1 - t) * t * p1y + t * t * p2y
@@ -663,12 +721,30 @@ fun SolarCycleCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(horizontalAlignment = Alignment.Start) {
-                    Text(stringResource(R.string.sunrise), color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
-                    Text(sunriseTime, color = Color.White.copy(alpha = 0.8f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.sunrise),
+                        color = Color.White.copy(alpha = 0.4f),
+                        fontSize = 9.sp
+                    )
+                    Text(
+                        sunriseTime,
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(stringResource(R.string.sunset), color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
-                    Text(sunsetTime, color = Color.White.copy(alpha = 0.8f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.sunset),
+                        color = Color.White.copy(alpha = 0.4f),
+                        fontSize = 9.sp
+                    )
+                    Text(
+                        sunsetTime,
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 

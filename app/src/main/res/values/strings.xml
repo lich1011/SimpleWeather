@@ -47,6 +47,8 @@
     <string name="aqi_excellent_cn">优</string>
     <string name="aqi_good_cn">良</string>
     <string name="aqi_moderate_cn">轻</string>
+    <string name="aqi_unavailable">暂无数据 (N/A)</string>
+    <string name="aqi_unavailable_short">AQI -</string>
     <string name="aqi_scale_excellent">0 (优)</string>
     <string name="aqi_scale_good">100 (良)</string>
     <string name="aqi_scale_bad">150+ (差)</string>
