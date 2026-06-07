@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.ui.theme.getWeatherColorScheme
 
 @Composable
@@ -65,7 +67,7 @@ fun WeatherNavigation(viewModel: WeatherViewModel = hiltViewModel()) {
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("请先在首页选择或搜索添加城市记录", color = Color.White.copy(alpha = 0.4f))
+                                Text(stringResource(R.string.select_city_navigation_prompt), color = Color.White.copy(alpha = 0.4f))
                             }
                         }
                     }

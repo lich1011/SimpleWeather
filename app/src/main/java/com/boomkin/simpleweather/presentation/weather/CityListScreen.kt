@@ -1,5 +1,6 @@
 package com.boomkin.simpleweather.presentation.weather
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,11 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.City
 import com.boomkin.simpleweather.domain.model.WeatherType
 import kotlin.math.absoluteValue
@@ -41,9 +46,10 @@ fun CityListScreen(
     var searchQuery by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val context = LocalContext.current
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showSnackbar(it.asString(context))
         }
     }
 
@@ -58,7 +64,7 @@ fun CityListScreen(
             // 1. Search block
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    text = "城市查询管理器 / FIND CITIES",
+                    text = stringResource(R.string.city_manager_title),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.4f),
@@ -75,13 +81,18 @@ fun CityListScreen(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "🔍", fontSize = 14.sp, color = Color.White.copy(alpha = 0.4f))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.4f),
+                        modifier = Modifier.size(16.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Box(modifier = Modifier.weight(1f)) {
                         if (searchQuery.isEmpty()) {
                             Text(
-                                text = "搜索并添加城市 (Sanya, Harbin, Beijing...)",
+                                text = stringResource(R.string.search_city_placeholder),
                                 color = Color.White.copy(alpha = 0.4f),
                                 fontSize = 14.sp
                             )
@@ -107,7 +118,7 @@ fun CityListScreen(
 
                     if (searchQuery.isNotEmpty()) {
                         Text(
-                            text = "添加",
+                            text = stringResource(R.string.add_city_button),
                             color = Color(0xFF34D399),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
@@ -125,7 +136,7 @@ fun CityListScreen(
             // 2. Preset list block
             Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxSize()) {
                 Text(
-                    text = "内置区域气象台 / PRESET STATIONS",
+                    text = stringResource(R.string.preset_stations_title),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.4f),
@@ -134,7 +145,7 @@ fun CityListScreen(
 
                 if (uiState.cities.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("暂无城市记录", color = Color.White.copy(alpha = 0.4f))
+                        Text(stringResource(R.string.no_cities_found), color = Color.White.copy(alpha = 0.4f))
                     }
                 } else {
                     LazyColumn(
@@ -182,7 +193,7 @@ fun CityListScreen(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                        // Weather Emoji Box
+                                        // Weather weatherIconRes Box
                                         Box(
                                             modifier = Modifier
                                                 .size(40.dp)
@@ -191,15 +202,19 @@ fun CityListScreen(
                                                 .border(1.dp, if (isActive) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.05f), RoundedCornerShape(12.dp)),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            val emoji = when (weather?.weatherType) {
-                                                WeatherType.SUNNY -> "☀️"
-                                                WeatherType.RAINY -> "🌧️"
-                                                WeatherType.SNOWY -> "❄️"
-                                                WeatherType.CLOUDY -> "☁️"
-                                                WeatherType.STORM -> "⛈️"
-                                                null -> "☁️"
+                                            val weatherIconRes = when (weather?.weatherType) {
+                                                WeatherType.SUNNY -> R.drawable.vd_weather_sunny
+                                                WeatherType.RAINY -> R.drawable.vd_weather_rainy
+                                                WeatherType.SNOWY -> R.drawable.vd_weather_snowy
+                                                WeatherType.CLOUDY -> R.drawable.vd_weather_cloudy
+                                                WeatherType.STORM -> R.drawable.vd_weather_storm
+                                                null -> R.drawable.vd_weather_cloudy
                                             }
-                                            Text(text = emoji, fontSize = 18.sp)
+                                            Image(
+                                                painter = painterResource(id =weatherIconRes),
+                                                contentDescription = weather?.weatherDesc,
+                                                modifier = Modifier.size(24.dp)
+                                            )
                                         }
 
                                         Column {
@@ -214,10 +229,11 @@ fun CityListScreen(
                                                     fontWeight = FontWeight.Bold
                                                 )
                                                 if (isActive) {
-                                                    Text(
-                                                        text = "✔️",
-                                                        color = Color(0xFF34D399),
-                                                        fontSize = 11.sp
+                                                    Icon(
+                                                        painter = painterResource(id =R.drawable.ic_check),
+                                                        contentDescription = "looking",
+                                                        tint = Color(0xFF34D399),
+                                                        modifier = Modifier.size(14.dp)
                                                     )
                                                 }
                                                 if(city.isDefault){
@@ -228,7 +244,7 @@ fun CityListScreen(
                                                             .padding(horizontal = 6.dp, vertical = 1.dp)
                                                     ){
                                                         Text(
-                                                            text = "默认",
+                                                            text = stringResource(R.string.default_city_label),
                                                             color = Color(0xFFFBBF24),
                                                             fontSize = 9.sp,
                                                             fontWeight = FontWeight.Bold
@@ -236,13 +252,13 @@ fun CityListScreen(
                                                     }
                                                 }
                                             }
-                                            Text(
-                                                text = if (weather != null) "${weather.weatherDesc} • ${weather.weatherType.name}" else "加载中...",
-                                                color = Color.White.copy(alpha = 0.4f),
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
-                                            )
+                                             Text(
+                                                 text = if (weather != null) stringResource(R.string.city_weather_desc_format, weather.weatherDesc, weather.weatherType.name) else stringResource(R.string.loading_text),
+                                                 color = Color.White.copy(alpha = 0.4f),
+                                                 fontSize = 10.sp,
+                                                 fontWeight = FontWeight.SemiBold,
+                                                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                                             )
                                         }
                                     }
 
@@ -253,28 +269,29 @@ fun CityListScreen(
                                             horizontalArrangement = Arrangement.spacedBy(16.dp)
                                         ) {
                                             Column(horizontalAlignment = Alignment.End) {
-                                                Text(
-                                                    text = "${weather.tempCurrent.toInt()}°",
-                                                    color = Color.White,
-                                                    fontSize = 24.sp,
-                                                    fontWeight = FontWeight.Light
-                                                )
-                                                Text(
-                                                    text = "AQI $aqi",
-                                                    color = Color.White.copy(alpha = 0.3f),
-                                                    fontSize = 9.sp,
-                                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
-                                                )
+                                                 Text(
+                                                     text = stringResource(R.string.temp_degree_format, weather.tempCurrent.toInt()),
+                                                     color = Color.White,
+                                                     fontSize = 24.sp,
+                                                     fontWeight = FontWeight.Light
+                                                 )
+                                                 Text(
+                                                     text = stringResource(R.string.aqi_format, aqi),
+                                                     color = Color.White.copy(alpha = 0.3f),
+                                                     fontSize = 9.sp,
+                                                     fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                                                 )
                                             }
 
-                                            Text(
-                                                text = if (city.isDefault) "X" else "x",
-                                                fontSize = 18.sp,
-                                                color = if (city.isDefault) Color(0xFFFBBF24) else Color.White.copy(alpha = 0.45f),
+                                            Icon(
+                                                painter = painterResource(id =R.drawable.ic_home),
+                                                contentDescription = if (city.isDefault) "default" else "set default",
+                                                tint = if (city.isDefault) Color(0xFFFBBF24) else Color.White.copy(alpha = 0.45f),
                                                 modifier = Modifier
                                                     .clip(RoundedCornerShape(8.dp))
                                                     .clickable(enabled = !city.isDefault){onSetDefaultCity(city)}
                                                     .padding(4.dp)
+                                                    .size(20.dp)
                                             )
 
                                             // Delete Button
@@ -284,7 +301,7 @@ fun CityListScreen(
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Delete,
-                                                    contentDescription = "删除",
+                                                    contentDescription = stringResource(R.string.delete_button),
                                                     tint = Color.White.copy(alpha = 0.2f),
                                                     modifier = Modifier.size(16.dp)
                                                 )

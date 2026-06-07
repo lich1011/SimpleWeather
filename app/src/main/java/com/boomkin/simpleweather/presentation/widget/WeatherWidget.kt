@@ -35,6 +35,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.MainActivity
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
+import androidx.glance.LocalContext
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
@@ -205,10 +206,11 @@ class WeatherWidget : GlanceAppWidget() {
                     modifier = GlanceModifier.fillMaxSize().padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
+                    val context = LocalContext.current
                     val text = if (targetCityName != null) {
-                        "正在为 ${targetCityName}\n加载数据..."
+                        context.getString(R.string.widget_loading_format, targetCityName)
                     } else {
-                        "暂无天气信息\n请先在App内设置"
+                        context.getString(R.string.widget_no_data)
                     }
                     Text(
                         text = text,
@@ -230,6 +232,7 @@ class WeatherWidget : GlanceAppWidget() {
         primaryTextColor: Color,
         secondaryTextColor: Color
     ) {
+        val context = LocalContext.current
         Row(
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -264,7 +267,7 @@ class WeatherWidget : GlanceAppWidget() {
                 )
                 Spacer(modifier = GlanceModifier.width(4.dp))
                 Text(
-                    text = "${weather.tempCurrent.toInt()}°",
+                    text = context.getString(R.string.temp_degree_format, weather.tempCurrent.toInt()),
                     style = TextStyle(
                         color = ColorProvider(primaryTextColor),
                         fontSize = 16.sp,
@@ -282,6 +285,7 @@ class WeatherWidget : GlanceAppWidget() {
         primaryTextColor: Color,
         secondaryTextColor: Color
     ) {
+        val context = LocalContext.current
         Row(
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -318,7 +322,7 @@ class WeatherWidget : GlanceAppWidget() {
                 )
                 Spacer(modifier = GlanceModifier.width(6.dp))
                 Text(
-                    text = "${weather.tempCurrent.toInt()}°",
+                    text = context.getString(R.string.temp_degree_format, weather.tempCurrent.toInt()),
                     style = TextStyle(
                         color = ColorProvider(primaryTextColor),
                         fontSize = 20.sp,
@@ -330,16 +334,18 @@ class WeatherWidget : GlanceAppWidget() {
             Spacer(modifier = GlanceModifier.defaultWeight())
 
             // Right: Additional Stats (Feels like & Humidity)
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
-                    text = "体感 ${weather.feelsLike.toInt()}°",
+                    text = context.getString(R.string.widget_feels_like_format, weather.feelsLike.toInt()),
                     style = TextStyle(
                         color = ColorProvider(secondaryTextColor),
                         fontSize = 9.sp
                     )
                 )
                 Text(
-                    text = "湿度 ${weather.humidity}%",
+                    text = context.getString(R.string.widget_humidity_format, weather.humidity),
                     style = TextStyle(
                         color = ColorProvider(secondaryTextColor),
                         fontSize = 9.sp
@@ -356,6 +362,7 @@ class WeatherWidget : GlanceAppWidget() {
         primaryTextColor: Color,
         secondaryTextColor: Color
     ) {
+        val context = LocalContext.current
         Column(
             modifier = GlanceModifier.fillMaxSize().padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -382,7 +389,7 @@ class WeatherWidget : GlanceAppWidget() {
                 )
                 Spacer(modifier = GlanceModifier.width(8.dp))
                 Text(
-                    text = "${weather.tempCurrent.toInt()}°",
+                    text = context.getString(R.string.temp_degree_format, weather.tempCurrent.toInt()),
                     style = TextStyle(
                         color = ColorProvider(primaryTextColor),
                         fontSize = 32.sp,

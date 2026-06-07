@@ -1,5 +1,6 @@
 package com.boomkin.simpleweather.presentation.weather
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,9 +13,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
@@ -59,9 +63,14 @@ fun HeroWeatherBanner(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(text = "✨", fontSize = 9.sp, color = theme.primaryColor)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_sparkle),
+                    contentDescription = null,
+                    tint = theme.primaryColor,
+                    modifier = Modifier.size(10.dp)
+                )
                 Text(
-                    text = "气象看板 • WEATHER OVERVIEW",
+                    text = stringResource(R.string.weather_overview_title),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold
@@ -88,7 +97,7 @@ fun HeroWeatherBanner(
                             letterSpacing = (-1.5).sp
                         )
                         Text(
-                            text = "°C",
+                            text = stringResource(R.string.temp_unit_celsius),
                             color = Color.White.copy(alpha = 0.7f),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Light,
@@ -127,7 +136,7 @@ fun HeroWeatherBanner(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "体感 ${data.feelsLike.toInt()}°C / 湿度 ${data.humidity}% / 风速 ${data.windSpeed}m/s",
+                        text = stringResource(R.string.weather_detail_format, data.feelsLike.toInt(), data.humidity, data.windSpeed),
                         color = Color.White.copy(alpha = 0.5f),
                         fontSize = 11.sp
                     )
@@ -142,16 +151,17 @@ fun HeroWeatherBanner(
                         .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    val weatherEmoji = when (data.weatherType) {
-                        WeatherType.SUNNY -> "☀️"
-                        WeatherType.RAINY -> "🌧️"
-                        WeatherType.SNOWY -> "❄️"
-                        WeatherType.CLOUDY -> "☁️"
-                        WeatherType.STORM -> "⛈️"
+                    val weatherIconRes = when (data.weatherType) {
+                        WeatherType.SUNNY -> R.drawable.vd_weather_sunny
+                        WeatherType.RAINY -> R.drawable.vd_weather_rainy
+                        WeatherType.SNOWY -> R.drawable.vd_weather_snowy
+                        WeatherType.CLOUDY -> R.drawable.vd_weather_cloudy
+                        WeatherType.STORM -> R.drawable.vd_weather_storm
                     }
-                    Text(
-                        text = weatherEmoji,
-                        fontSize = 32.sp
+                    Image(
+                        painter = painterResource(weatherIconRes),
+                        contentDescription = data.weatherDesc,
+                        modifier = Modifier.size(40.dp)
                     )
                 }
             }
@@ -166,13 +176,13 @@ fun HeroWeatherBanner(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "今日气温区间范围",
+                    text = stringResource(R.string.today_temp_range_label),
                     color = Color.White.copy(alpha = 0.4f),
                     fontSize = 11.sp,
                     fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                 )
                 Text(
-                    text = "${data.tempMin.toInt()}°C ~ ${data.tempMax.toInt()}°C",
+                    text = stringResource(R.string.temp_range_format, data.tempMin.toInt(), data.tempMax.toInt()),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,

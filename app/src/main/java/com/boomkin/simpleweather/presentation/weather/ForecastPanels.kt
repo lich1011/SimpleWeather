@@ -1,9 +1,11 @@
 package com.boomkin.simpleweather.presentation.weather
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,11 +18,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.ForecastItem
 import com.boomkin.simpleweather.domain.model.HourlyForecastItem
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
@@ -48,7 +53,7 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "24小时逐时预报 / HOURLY TIMELINE",
+                text = stringResource(R.string.hourly_timeline_title),
                 color = Color.White.copy(alpha = 0.9f),
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp
@@ -87,25 +92,37 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
                             .background(Color.White.copy(alpha = 0.05f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        ForecastIcon(desc = hour.weatherDesc, fontSize = 16f)
+                        ForecastIcon(desc = hour.weatherDesc, sizeDp = 16f)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "${hour.temperature.toInt()}°",
+                        text = stringResource(R.string.temp_degree_format, hour.temperature.toInt()),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
 
-                    Text(
-                        text = "💧${hour.humidity}%",
-                        color = Color(0xFF7DD3FC),
-                        fontSize = 8.sp,
-                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                        fontWeight = FontWeight.Medium
-                    )
+                   Row(
+                       verticalAlignment = Alignment.CenterVertically,
+                       horizontalArrangement = Arrangement.spacedBy(1.dp)
+                   ) {
+                       Icon(
+                           painter = painterResource(id = R.drawable.ic_drop),
+                           contentDescription = null,
+                           tint = Color(0xFF7DD3FC),
+                           modifier = Modifier.size(8.dp)
+                       )
+
+                       Text(
+                           text = stringResource(R.string.humidity_percent_format, hour.humidity),
+                           color = Color(0xFF7DD3FC),
+                           fontSize = 8.sp,
+                           fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                           fontWeight = FontWeight.Medium
+                       )
+                   }
                 }
             }
         }
@@ -116,20 +133,20 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
 fun ForecastIcon(
     desc: String,
     modifier: Modifier = Modifier,
-    fontSize: Float = 20f
+    sizeDp: Float = 20f
 ) {
-    val emoji = when {
-        desc.contains("雨", ignoreCase = true) || desc.contains("rain", ignoreCase = true) -> "🌧️"
-        desc.contains("雪", ignoreCase = true) || desc.contains("snow", ignoreCase = true) -> "❄️"
-        desc.contains("雷", ignoreCase = true) || desc.contains("storm", ignoreCase = true) -> "⛈️"
-        desc.contains("晴", ignoreCase = true) || desc.contains("clear", ignoreCase = true) || desc.contains("sun", ignoreCase = true) -> "☀️"
-        desc.contains("多云", ignoreCase = true) || desc.contains("cloud", ignoreCase = true) -> "⛅"
-        else -> "☁️"
+    val iconRes = when {
+        desc.contains("雨", ignoreCase = true) || desc.contains("rain", ignoreCase = true) -> R.drawable.vd_weather_rainy
+        desc.contains("雪", ignoreCase = true) || desc.contains("snow", ignoreCase = true) -> R.drawable.vd_weather_snowy
+        desc.contains("雷", ignoreCase = true) || desc.contains("storm", ignoreCase = true) -> R.drawable.vd_weather_storm
+        desc.contains("晴", ignoreCase = true) || desc.contains("clear", ignoreCase = true) || desc.contains("sun", ignoreCase = true) -> R.drawable.vd_weather_sunny
+        desc.contains("多云", ignoreCase = true) || desc.contains("cloud", ignoreCase = true) -> R.drawable.vd_weather_cloudy
+        else -> R.drawable.vd_weather_cloudy
     }
-    Text(
-        text = emoji,
-        fontSize = fontSize.sp,
-        modifier = modifier
+    Image(
+        painter = painterResource(iconRes),
+        contentDescription = desc,
+        modifier = modifier.size(sizeDp.dp)
     )
 }
 
@@ -158,7 +175,7 @@ fun DailyForecastPanel(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "未来 5 天降水与温差 / 5-DAY GRAPH",
+                text = stringResource(R.string.five_day_graph_title),
                 color = Color.White.copy(alpha = 0.9f),
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp
@@ -200,7 +217,7 @@ fun DailyForecastPanel(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
-                        ForecastIcon(desc = day.weatherDesc, fontSize = 14f)
+                        ForecastIcon(desc = day.weatherDesc, sizeDp = 14f)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = day.weatherDesc,
@@ -218,7 +235,7 @@ fun DailyForecastPanel(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = "${day.tempMin.toInt()}°",
+                            text = stringResource(R.string.temp_degree_format, day.tempMin.toInt()),
                             color = Color.White.copy(alpha = 0.4f),
                             fontSize = 10.sp,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
@@ -259,7 +276,7 @@ fun DailyForecastPanel(
                         Spacer(modifier = Modifier.width(8.dp))
 
                         Text(
-                            text = "${day.tempMax.toInt()}°",
+                            text = stringResource(R.string.temp_degree_format, day.tempMax.toInt()),
                             color = Color.White,
                             fontSize = 10.sp,
                             fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
@@ -275,11 +292,10 @@ fun DailyForecastPanel(
 
 private fun parseDayOfWeek(dateStr: String): String {
     return try {
-        val weekDays = arrayOf("周日", "周一", "周二", "周三", "周四", "周五", "周六")
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = sdf.parse(dateStr) ?: return dateStr
         val cal = Calendar.getInstance().apply { time = date }
-        weekDays[cal.get(Calendar.DAY_OF_WEEK) - 1]
+        cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) ?: dateStr
     } catch (_: Exception) {
         dateStr
     }

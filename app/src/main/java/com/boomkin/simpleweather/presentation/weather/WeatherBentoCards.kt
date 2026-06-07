@@ -16,10 +16,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
@@ -113,7 +116,7 @@ fun WindCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "风速 / WIND",
+                text = stringResource(R.string.wind_title),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -135,14 +138,14 @@ fun WindCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = " m/s",
+                        text = stringResource(R.string.wind_speed_unit),
                         color = Color.White.copy(alpha = 0.6f),
                         fontSize = 12.sp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
                 Text(
-                    text = if (data.windSpeed > 5.0) "风力较强" else "微风徐徐",
+                    text = if (data.windSpeed > 5.0) stringResource(R.string.wind_strong) else stringResource(R.string.wind_gentle),
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -227,7 +230,7 @@ fun HumidityCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "湿度 / HUMIDITY",
+                text = stringResource(R.string.humidity_title),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -256,7 +259,7 @@ fun HumidityCard(
                     )
                 }
                 Text(
-                    text = "露点温度约 ${dewPoint}°C",
+                    text = stringResource(R.string.dew_point_format, dewPoint),
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -278,10 +281,13 @@ fun HumidityCard(
                         .fillMaxHeight(fillRatio)
                         .background(Color(0x333498DB))
                 )
-                Text(
-                    text = "💧",
-                    fontSize = 20.sp,
-                    modifier = Modifier.align(Alignment.Center)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_drop),
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.9f),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(20.dp)
                 )
             }
         }
@@ -293,9 +299,9 @@ fun HumidityCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("干燥 Dry", color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
-                Text("适宜 Optimum", color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
-                Text("潮湿 Humid", color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
+                Text(stringResource(R.string.dry_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
+                Text(stringResource(R.string.optimum_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
+                Text(stringResource(R.string.humid_label), color = Color.White.copy(alpha = 0.4f), fontSize = 8.sp)
             }
             Spacer(modifier = Modifier.height(2.dp))
             Row(
@@ -320,10 +326,10 @@ fun UvCard(
     modifier: Modifier = Modifier
 ) {
     val uvLevel = when {
-        uvIndex <= 2 -> "极弱"
-        uvIndex <= 5 -> "中等"
-        uvIndex <= 7 -> "强 (High)"
-        else -> "极强 (Very High)"
+        uvIndex <= 2 -> stringResource(R.string.uv_very_weak)
+        uvIndex <= 5 -> stringResource(R.string.uv_medium)
+        uvIndex <= 7 -> stringResource(R.string.uv_high)
+        else -> stringResource(R.string.uv_very_high)
     }
 
     BentoCard(modifier = modifier.height(170.dp)) {
@@ -333,7 +339,7 @@ fun UvCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "紫外线 / UV INDEX",
+                text = stringResource(R.string.uv_title),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -362,7 +368,7 @@ fun UvCard(
                     )
                 }
                 Text(
-                    text = "紫外线强度：$uvLevel",
+                    text = stringResource(R.string.uv_level_format, uvLevel),
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -408,7 +414,7 @@ fun UvCard(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = if (uvIndex >= 6) "建议物理防晒、佩戴墨镜" else "紫外线柔和，适合户外远足",
+            text = if (uvIndex >= 6) stringResource(R.string.uv_advice_strong) else stringResource(R.string.uv_advice_weak),
             color = Color.White.copy(alpha = 0.4f),
             style = MaterialTheme.typography.bodyMedium
         )
@@ -423,9 +429,9 @@ fun AqiCard(
     modifier: Modifier = Modifier
 ) {
     val aqiStatus = when {
-        aqi <= 50 -> "Excellent (优)"
-        aqi <= 100 -> "Good (良)"
-        else -> "Moderate (轻度)"
+        aqi <= 50 -> stringResource(R.string.aqi_excellent_en)
+        aqi <= 100 -> stringResource(R.string.aqi_good_en)
+        else -> stringResource(R.string.aqi_moderate_en)
     }
     val aqiColor = when {
         aqi <= 50 -> Color(0xFF4ADE80)
@@ -433,9 +439,9 @@ fun AqiCard(
         else -> Color(0xFFEF4444)
     }
     val aqiLabel = when {
-        aqi <= 50 -> "优"
-        aqi <= 100 -> "良"
-        else -> "轻"
+        aqi <= 50 -> stringResource(R.string.aqi_excellent_cn)
+        aqi <= 100 -> stringResource(R.string.aqi_good_cn)
+        else -> stringResource(R.string.aqi_moderate_cn)
     }
 
     BentoCard(modifier = modifier.height(170.dp)) {
@@ -445,7 +451,7 @@ fun AqiCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "空气质量 / AQI",
+                text = stringResource(R.string.aqi_title),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -543,9 +549,9 @@ fun AqiCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("0 (优)", color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
-                Text("100 (良)", color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
-                Text("150+ (差)", color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
+                Text(stringResource(R.string.aqi_scale_excellent), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
+                Text(stringResource(R.string.aqi_scale_good), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
+                Text(stringResource(R.string.aqi_scale_bad), color = Color.White.copy(alpha = 0.3f), fontSize = 8.sp)
             }
         }
     }
@@ -572,7 +578,7 @@ fun SolarCycleCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "日出日落 / SOLAR CYCLE",
+                text = stringResource(R.string.solar_cycle_title),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelSmall
             )
@@ -657,11 +663,11 @@ fun SolarCycleCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(horizontalAlignment = Alignment.Start) {
-                    Text("日出", color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
+                    Text(stringResource(R.string.sunrise), color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
                     Text(sunriseTime, color = Color.White.copy(alpha = 0.8f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("日落", color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
+                    Text(stringResource(R.string.sunset), color = Color.White.copy(alpha = 0.4f), fontSize = 9.sp)
                     Text(sunsetTime, color = Color.White.copy(alpha = 0.8f), fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -679,7 +685,7 @@ fun SolarCycleCard(
                 val hours = dayLenSec / 3600
                 val mins = (dayLenSec % 3600) / 60
                 Text(
-                    text = "白昼时长约 $hours 小时 $mins 分钟",
+                    text = stringResource(R.string.day_length_format, hours, mins),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 10.sp
                 )
@@ -689,7 +695,7 @@ fun SolarCycleCard(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "黄金时刻 Golden Hour 在日落前 1 小时",
+            text = stringResource(R.string.golden_hour_label),
             color = Color.White.copy(alpha = 0.4f),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),

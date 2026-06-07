@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.boomkin.simpleweather.R
 import javax.inject.Inject
 
 data class WeatherUIState(
@@ -29,7 +30,7 @@ data class WeatherUIState(
     val history: List<Weather> = emptyList(),
     val cityWeathers: Map<String, Weather> = emptyMap(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: UiText? = null
 )
 
 
@@ -164,7 +165,7 @@ class WeatherViewModel @Inject constructor(
                 repository.saveWeatherRecords(data.weather)
             }.onFailure { e ->
                 Timber.e(e, "Failed to fetch weather data for ${city.name}")
-                _uiState.update { it.copy(errorMessage = e.message ?: "Failed to fetch weather") }
+                _uiState.update { it.copy(errorMessage = getFriendlyErrorMessage(e)) }
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -181,7 +182,7 @@ class WeatherViewModel @Inject constructor(
                 }
                 .onFailure {
                     Timber.e(it, "Failed to add city: $cityName")
-                    _uiState.update { state -> state.copy(errorMessage = it.message ?: "Failed to add city") }
+                    _uiState.update { state -> state.copy(errorMessage = getFriendlyErrorMessage(it)) }
                 }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -217,6 +218,27 @@ class WeatherViewModel @Inject constructor(
     fun setDefaultCity(city: City) {
         viewModelScope.launch {
             repository.setDefaultCity(city.id)
+        }
+    }
+
+    private fun getFriendlyErrorMessage(throwable: Throwable): UiText {
+        return when (throwable) {
+            is java.net.UnknownHostException,
+            is java.net.ConnectException,
+            is java.net.SocketTimeoutException,
+            is java.io.IOException -> UiText.StringResource(R.string.error_network_failed)
+            else -> {
+                val msg = throwable.message ?: ""
+                if (msg.contains("City not found", ignoreCase = true)) {
+                    UiText.StringResource(R.string.error_city_not_found)
+                } else {
+                    if (msg.isBlank()) {
+                        UiText.StringResource(R.string.error_unknown)
+                    } else {
+                        UiText.DynamicString(msg)
+                    }
+                }
+            }
         }
     }
 

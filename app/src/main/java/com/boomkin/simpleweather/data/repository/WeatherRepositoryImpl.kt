@@ -1,8 +1,5 @@
 package com.boomkin.simpleweather.data.repository
 
-import android.content.Context
-import com.boomkin.simpleweather.presentation.widget.WeatherWidgetStateUpdater
-import dagger.hilt.android.qualifiers.ApplicationContext
 import com.boomkin.simpleweather.data.local.dao.CachedWeatherDao
 import com.boomkin.simpleweather.data.local.dao.CityDao
 import com.boomkin.simpleweather.data.local.dao.WeatherRecordDao
@@ -20,8 +17,6 @@ import com.boomkin.simpleweather.domain.model.HourlyForecastItem
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.repository.WeatherData
 import com.boomkin.simpleweather.domain.repository.WeatherRepository
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -36,8 +31,7 @@ class WeatherRepositoryImpl @Inject constructor(
     private val api: WeatherApi,
     private val cityDao: CityDao,
     private val weatherRecordDao: WeatherRecordDao,
-    private val cachedWeatherDao: CachedWeatherDao,
-    private val gson: Gson
+    private val cachedWeatherDao: CachedWeatherDao
 ) : WeatherRepository {
 
     /**
@@ -111,29 +105,18 @@ class WeatherRepositoryImpl @Inject constructor(
     private suspend fun saveToCache(data: WeatherData) {
         val entity = CachedWeatherEntity(
             cityName = data.weather.cityName,
-            weatherDataJson = gson.toJson(data.weather),
-            dailyForecastJson = gson.toJson(data.dailyForecast),
-            hourlyForecastJson = gson.toJson(data.hourlyForecast),
+            weatherData = data.weather,
+            dailyForecast = data.dailyForecast,
+            hourlyForecast = data.hourlyForecast,
             lastUpdated = System.currentTimeMillis()
         )
         cachedWeatherDao.insertCachedWeather(entity)
-
     }
 
     override fun getCachedWeatherDataFlow(cityName: String): Flow<WeatherData?> {
         return cachedWeatherDao.getCachedWeatherFlow(cityName).map { entity ->
             if (entity == null) return@map null
-            try {
-                val weather = gson.fromJson(entity.weatherDataJson, Weather::class.java)
-                val dailyType = object : TypeToken<List<ForecastItem>>() {}.type
-                val daily = gson.fromJson<List<ForecastItem>>(entity.dailyForecastJson, dailyType)
-                val hourlyType = object : TypeToken<List<HourlyForecastItem>>() {}.type
-                val hourly = gson.fromJson<List<HourlyForecastItem>>(entity.hourlyForecastJson, hourlyType)
-                WeatherData(weather, daily, hourly)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to parse cached weather data for $cityName")
-                null
-            }
+            WeatherData(entity.weatherData, entity.dailyForecast, entity.hourlyForecast)
         }.flowOn(Dispatchers.IO)
     }
 

@@ -95,8 +95,7 @@ object AppModule {
         cityDao: CityDao,
         weatherRecordDao: WeatherRecordDao,
         cachedWeatherDao: CachedWeatherDao,
-        gson: Gson,
     ): WeatherRepository {
-        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao, gson)
+        return WeatherRepositoryImpl(api, cityDao, weatherRecordDao, cachedWeatherDao)
     }
 }

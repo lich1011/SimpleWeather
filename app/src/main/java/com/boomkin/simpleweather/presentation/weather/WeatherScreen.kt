@@ -14,15 +14,21 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
 import com.boomkin.simpleweather.ui.theme.getWeatherTheme
@@ -38,9 +44,10 @@ fun WeatherHomeScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val context = LocalContext.current
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
+            snackbarHostState.showSnackbar(it.asString(context))
         }
     }
 
@@ -81,6 +88,10 @@ fun WeatherHomeScreen(
                         )
                 )
 
+                // Bottom Sheet State
+                var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+                val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
                 // 3. 内容滚动区
                 Column(
                     modifier = Modifier
@@ -102,36 +113,65 @@ fun WeatherHomeScreen(
                         HeroWeatherBanner(data = weather, theme = theme)
                     }
 
-                    // 避险提示卡片
+                    // 今日气象详情折叠卡片
                     StaggeredAnimatedVisibility(visible, 200) {
-                        SafetyAdviceCard(data = weather, theme = theme, onNavigateToCities = onNavigateToCities)
-                    }
-
-                    // Bento 网格数据中心
-                    StaggeredAnimatedVisibility(visible, 300) {
-                        WeatherStats(data = weather, theme = theme)
-                    }
-
-                    // 24小时逐时预报
-                    if (uiState.hourlyForecast.isNotEmpty()) {
-                        StaggeredAnimatedVisibility(visible, 400) {
-                            HourlyForecastPanel(hourly = uiState.hourlyForecast)
-                        }
+                        TodayDetailsCard(
+                            data = weather,
+                            theme = theme,
+                            onClick = { showBottomSheet = true }
+                        )
                     }
 
                     // 未来 5 天温差图谱
                     if (uiState.forecast.isNotEmpty()) {
-                        StaggeredAnimatedVisibility(visible, 500) {
+                        StaggeredAnimatedVisibility(visible, 300) {
                             DailyForecastPanel(daily = uiState.forecast, theme = theme)
                         }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
                 }
+
+                // Modal Bottom Sheet displaying collapsed details
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showBottomSheet = false },
+                        sheetState = sheetState,
+                        containerColor = Color(0xFF0F172A).copy(alpha = 0.95f),
+                        scrimColor = Color.Black.copy(alpha = 0.6f),
+                        dragHandle = { BottomSheetDefaults.DragHandle(color = Color.White.copy(alpha = 0.3f)) }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .navigationBarsPadding()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            SafetyAdviceCard(
+                                data = weather,
+                                theme = theme,
+                                onNavigateToCities = {
+                                    showBottomSheet = false
+                                    onNavigateToCities()
+                                }
+                            )
+
+                            WeatherStats(data = weather, theme = theme)
+
+                            if (uiState.hourlyForecast.isNotEmpty()) {
+                                HourlyForecastPanel(hourly = uiState.hourlyForecast)
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+                    }
+                }
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("请先在首页选择或搜索城市记录", color = Color.White.copy(alpha = 0.5f), fontSize = 14.sp)
+                Text(stringResource(R.string.select_city_prompt), color = Color.White.copy(alpha = 0.5f), fontSize = 14.sp)
             }
         }
 
@@ -213,7 +253,7 @@ fun CurrentLocationHeader(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "返回",
+                    contentDescription = stringResource(R.string.back_button),
                     tint = Color.White.copy(alpha = 0.8f),
                     modifier = Modifier.size(18.dp)
                 )
@@ -227,16 +267,17 @@ fun CurrentLocationHeader(
                     .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🧭",
-                    fontSize = 18.sp,
-                    modifier = Modifier.rotate(compassAngle)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_compass),
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.8f),
+                    modifier = Modifier.size(18.dp).rotate(compassAngle)
                 )
             }
 
             Column {
                 Text(
-                    text = "当前城市 / VIEWING",
+                    text = stringResource(R.string.viewing_city_label),
                     color = Color.White.copy(alpha = 0.4f),
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -278,11 +319,105 @@ fun CurrentLocationHeader(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "AQI $aqi",
+                text = stringResource(R.string.aqi_format, aqi),
                 color = Color.White.copy(alpha = 0.3f),
                 fontSize = 9.sp,
                 fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
             )
+        }
+    }
+}
+
+@Composable
+fun TodayDetailsCard(
+    data: Weather,
+    theme: WeatherTheme,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(30.dp))
+            .background(Color.White.copy(alpha = 0.05f))
+            .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(30.dp))
+            .clickable { onClick() }
+            .padding(20.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_info),
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.today_details_title),
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                    )
+                }
+                
+                Text(
+                    text = stringResource(R.string.expand_more_label),
+                    color = theme.primaryColor,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            // Quick Stats Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val stats = listOf(
+                    Triple(painterResource(R.drawable.vd_weather_sunny), stringResource(R.string.temp_celsius_format, data.tempCurrent.toInt()), stringResource(R.string.temp_label)),
+                    Triple(painterResource(R.drawable.ic_compass), stringResource(R.string.temp_celsius_format, data.feelsLike.toInt()), stringResource(R.string.feels_like_label)),
+                    Triple(painterResource(R.drawable.ic_drop), stringResource(R.string.humidity_percent_format, data.humidity), stringResource(R.string.humidity_label)),
+                    Triple(painterResource(R.drawable.ic_sparkle), data.aqi.toString(), stringResource(R.string.aqi_label))
+                )
+                
+                stats.forEach { (painter, value, label) ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            painter = painter,
+                            contentDescription = null,
+                            tint = if (painter == painterResource(R.drawable.vd_weather_sunny)) theme.primaryColor else Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = value,
+                            color = Color.White,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = label,
+                            color = Color.White.copy(alpha = 0.4f),
+                            fontSize = 9.sp
+                        )
+                    }
+                }
+            }
         }
     }
 }

@@ -11,9 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
@@ -58,24 +61,34 @@ fun SafetyAdviceCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Text("ℹ️", fontSize = 12.sp)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_info),
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.5f),
+                    modifier = Modifier.size(12.dp)
+                )
                 Text(
-                    text = "Android 智能避险提示",
+                    text = stringResource(R.string.safety_advice_title),
                     color = Color.White.copy(alpha = 0.4f),
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                 )
             }
-            Text("⚠️", fontSize = 12.sp, color = Color.White.copy(alpha = 0.3f))
+            Icon(
+                painter = painterResource(id = R.drawable.ic_warning),
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.3f),
+                modifier = Modifier.size(12.dp)
+            )
         }
 
         val adviceText = when (data.weatherType) {
-            WeatherType.STORM -> "强雷电大风预警： 当前风力达 ${data.windSpeed}m/s 并伴有强雷暴闪电。请尽快寻找坚固遮蔽场所，避免户外运动、水边久留并注意雷电避险。"
-            WeatherType.SNOWY -> "大雪结冰预警： 室外体感降至 ${data.feelsLike.toInt()}°C。路面积雪较深并有严重打滑现象，驾车请安装防滑链、减速慢行，老人小孩减少出门。"
-            WeatherType.SUNNY -> "紫外线极强提示： 阳光暴晒，建议涂抹物理防护霜、佩戴墨镜出行。多喝温水防止脱水，适合在清晨或傍晚散心。"
-            WeatherType.RAINY -> "微风小雨提示： 细雨连绵，相对湿度 ${data.humidity}%。出行记得携带好雨具，小心地面湿滑，雨天视线较差驾车需特别小心。"
-            WeatherType.CLOUDY -> "阴天多云气象： 光线十分温和柔雅，紫外线较弱。空气质量良好，非常适合户外散心、远足慢跑或去公园游玩放松。"
+            WeatherType.STORM -> stringResource(R.string.safety_advice_storm, data.windSpeed)
+            WeatherType.SNOWY -> stringResource(R.string.safety_advice_snowy, data.feelsLike.toInt())
+            WeatherType.SUNNY -> stringResource(R.string.safety_advice_sunny)
+            WeatherType.RAINY -> stringResource(R.string.safety_advice_rainy, data.humidity)
+            WeatherType.CLOUDY -> stringResource(R.string.safety_advice_cloudy)
         }
 
         Text(
@@ -101,12 +114,16 @@ fun SafetyAdviceCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "切换其他区域气候",
+                    text = stringResource(R.string.switch_city_button),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "↗️", fontSize = 11.sp)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_outward),
+                    contentDescription = null,
+                    modifier = Modifier.size(11.dp)
+                )
             }
         }
     }
