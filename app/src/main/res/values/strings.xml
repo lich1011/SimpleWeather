@@ -2,92 +2,94 @@
     <string name="app_name">SimpleWeather</string>
 
     <!-- Widget -->
-    <string name="widget_loading_format">正在为 %1$s\n加载数据…</string>
-    <string name="widget_no_data">暂无天气信息\n请先在App内设置</string>
-    <string name="widget_feels_like_format">体感 %1$d°</string>
-    <string name="widget_humidity_format">湿度 %1$d%%</string>
+    <string name="widget_loading_format">Loading for %1$s\n…</string>
+    <string name="widget_no_data">No weather data\nPlease set up in app first</string>
+    <string name="widget_feels_like_format">Feels %1$d°</string>
+    <string name="widget_humidity_format">Humidity %1$d%%</string>
 
     <!-- City List Screen -->
-    <string name="city_manager_title">城市查询管理器 / FIND CITIES</string>
-    <string name="search_city_placeholder">搜索并添加城市 (Sanya, Harbin, Beijing...)</string>
-    <string name="add_city_button">添加</string>
-    <string name="preset_stations_title">内置区域气象台 / PRESET STATIONS</string>
-    <string name="no_cities_found">暂无城市记录</string>
-    <string name="default_city_label">默认</string>
-    <string name="loading_text">加载中…</string>
-    <string name="delete_button">删除</string>
+    <string name="city_manager_title">FIND CITIES</string>
+    <string name="search_city_placeholder">Search and add city (Sanya, Harbin, Beijing...)</string>
+    <string name="add_city_button">Add</string>
+    <string name="preset_stations_title">PRESET STATIONS</string>
+    <string name="no_cities_found">No city records</string>
+    <string name="default_city_label">Default</string>
+    <string name="loading_text">Loading…</string>
+    <string name="delete_button">Delete</string>
 
     <!-- Weather Screen -->
-    <string name="select_city_prompt">请先在首页选择或搜索城市记录</string>
-    <string name="select_city_navigation_prompt">请先在首页选择或搜索添加城市记录</string>
-    <string name="back_button">返回</string>
-    <string name="viewing_city_label">当前城市 / VIEWING</string>
+    <string name="select_city_prompt">Please select or search for a city on the home screen</string>
+    <string name="select_city_navigation_prompt">Please select or search to add a city on the home screen</string>
+    <string name="back_button">Back</string>
+    <string name="viewing_city_label">VIEWING</string>
 
     <!-- Weather Bento Cards -->
-    <string name="wind_title">风速 / WIND</string>
-    <string name="wind_strong">风力较强</string>
-    <string name="wind_gentle">微风徐徐</string>
-    <string name="humidity_title">湿度 / HUMIDITY</string>
-    <string name="dew_point_format">露点温度约 %1$d°C</string>
-    <string name="dry_label">干燥 Dry</string>
-    <string name="optimum_label">适宜 Optimum</string>
-    <string name="humid_label">潮湿 Humid</string>
-    <string name="uv_title">紫外线 / UV INDEX</string>
-    <string name="uv_very_weak">极弱</string>
-    <string name="uv_medium">中等</string>
-    <string name="uv_high">强 (High)</string>
-    <string name="uv_very_high">极强 (Very High)</string>
-    <string name="uv_level_format">紫外线强度：%1$s</string>
-    <string name="uv_advice_strong">建议物理防晒、佩戴墨镜</string>
-    <string name="uv_advice_weak">紫外线柔和，适合户外远足</string>
-    <string name="aqi_title">空气质量 / AQI</string>
-    <string name="aqi_excellent_en">Excellent (优)</string>
-    <string name="aqi_good_en">Good (良)</string>
-    <string name="aqi_moderate_en">Moderate (轻度)</string>
-    <string name="aqi_excellent_cn">优</string>
-    <string name="aqi_good_cn">良</string>
-    <string name="aqi_moderate_cn">轻</string>
-    <string name="aqi_unavailable">暂无数据 (N/A)</string>
+    <string name="wind_title">WIND</string>
+    <string name="wind_strong">Strong wind</string>
+    <string name="wind_gentle">Gentle breeze</string>
+    <string name="humidity_title">HUMIDITY</string>
+    <string name="dew_point_format">Dew point is around %1$d°C</string>
+    <string name="dry_label">Dry</string>
+    <string name="optimum_label">Optimum</string>
+    <string name="humid_label">Humid</string>
+    <string name="uv_title">UV INDEX</string>
+    <string name="uv_very_weak">Very Weak</string>
+    <string name="uv_medium">Moderate</string>
+    <string name="uv_high">High</string>
+    <string name="uv_very_high">Very High</string>
+    <string name="uv_level_format">UV Index: %1$s</string>
+    <string name="uv_advice_strong">Physical sunscreen and sunglasses recommended</string>
+    <string name="uv_advice_weak">Gentle UV, great for outdoor hiking</string>
+    <string name="aqi_title">AQI</string>
+    
+    <string name="aqi_excellent">Excellent</string>
+    <string name="aqi_good">Good</string>
+    <string name="aqi_moderate">Moderate</string>
+    <string name="aqi_excellent_short">Exc</string>
+    <string name="aqi_good_short">Good</string>
+    <string name="aqi_moderate_short">Mod</string>
+    
+    <string name="aqi_unavailable">N/A</string>
     <string name="aqi_unavailable_short">AQI -</string>
-    <string name="aqi_scale_excellent">0 (优)</string>
-    <string name="aqi_scale_good">100 (良)</string>
-    <string name="aqi_scale_bad">150+ (差)</string>
-    <string name="solar_cycle_title">日出日落 / SOLAR CYCLE</string>
-    <string name="sunrise">日出</string>
-    <string name="sunset">日落</string>
-    <string name="day_length_format">白昼时长约 %1$d 小时 %2$d 分钟</string>
-    <string name="golden_hour_label">黄金时刻 Golden Hour 在日落前 1 小时</string>
+    <string name="aqi_scale_excellent">0 (Exc)</string>
+    <string name="aqi_scale_good">100 (Good)</string>
+    <string name="aqi_scale_bad">150+ (Bad)</string>
+    <string name="solar_cycle_title">SOLAR CYCLE</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="day_length_format">Daylight is about %1$d hours %2$d minutes</string>
+    <string name="golden_hour_label">Golden Hour is 1 hour before sunset</string>
 
     <!-- Safety Advice Card -->
-    <string name="safety_advice_title">Android 智能避险提示</string>
-    <string name="switch_city_button">切换其他区域气候</string>
-    <string name="safety_advice_storm">强雷电大风预警： 当前风力达 %1$.1fm/s 并伴有强雷暴闪电。请尽快寻找坚固遮蔽场所，避免户外运动、水边久留并注意雷电避险。</string>
-    <string name="safety_advice_snowy">大雪结冰预警： 室外体感降至 %1$d°C。路面积雪较深并有严重打滑现象，驾车请安装防滑链、减速慢行，老人小孩减少出门。</string>
-    <string name="safety_advice_sunny">紫外线极强提示： 阳光暴晒，建议涂抹物理防护霜、佩戴墨镜出行。多喝温水防止脱水，适合在清晨或傍晚散心。</string>
-    <string name="safety_advice_rainy">微风小雨提示： 细雨连绵，相对湿度 %1$d%%。出行记得携带好雨具，小心地面湿滑，雨天视线较差驾车需特别小心。</string>
-    <string name="safety_advice_cloudy">阴天多云气象： 光线十分温和柔雅，紫外线较弱。空气质量良好，非常适合户外散心、远足慢跑或去公园游玩放松。</string>
+    <string name="safety_advice_title">Android Smart Safety Advice</string>
+    <string name="switch_city_button">Switch climate zone</string>
+    <string name="safety_advice_storm">Severe Storm Warning: Current wind is %1$.1fm/s with thunderstorms. Seek shelter immediately, avoid outdoor activities, stay away from water, and beware of lightning.</string>
+    <string name="safety_advice_snowy">Blizzard &amp; Ice Warning: Feels like %1$d°C. Roads are icy and slippery. Slow down, use snow chains if driving, and minimize outdoor trips for elders and kids.</string>
+    <string name="safety_advice_sunny">Extreme UV Notice: High sun exposure. Apply sunscreen and wear sunglasses. Stay hydrated. Best to relax outdoors in early morning or evening.</string>
+    <string name="safety_advice_rainy">Drizzle &amp; Rain Notice: Continuous rain with %1$d%% humidity. Bring an umbrella, watch for slippery ground, and drive carefully in low visibility.</string>
+    <string name="safety_advice_cloudy">Overcast Notice: Mild light and low UV levels. Good air quality makes it perfect for walking, jogging, or relaxing in the park.</string>
 
     <!-- Hero Weather Banner -->
-    <string name="weather_overview_title">气象看板 • WEATHER OVERVIEW</string>
-    <string name="weather_detail_format">体感 %1$d°C / 湿度 %2$d%% / 风速 %3$.1fm/s</string>
-    <string name="today_temp_range_label">今日气温区间范围</string>
+    <string name="weather_overview_title">WEATHER OVERVIEW</string>
+    <string name="weather_detail_format">Feels %1$d°C / Humidity %2$d%% / Wind %3$.1fm/s</string>
+    <string name="today_temp_range_label">Today\'s temperature range</string>
 
     <!-- Forecast Panels -->
-    <string name="hourly_timeline_title">24小时逐时预报 / HOURLY TIMELINE</string>
-    <string name="five_day_graph_title">未来 5 天降水与温差 / 5-DAY GRAPH</string>
+    <string name="hourly_timeline_title">HOURLY TIMELINE</string>
+    <string name="five_day_graph_title">5-DAY GRAPH</string>
 
     <!-- Today Details Card -->
-    <string name="today_details_title">今日气象详情 / TODAY\'S DETAILS</string>
-    <string name="expand_more_label">展开更多 ↗</string>
-    <string name="temp_label">气温</string>
-    <string name="feels_like_label">体感</string>
-    <string name="humidity_label">湿度</string>
+    <string name="today_details_title">TODAY\'S DETAILS</string>
+    <string name="expand_more_label">Expand ↗</string>
+    <string name="temp_label">Temp</string>
+    <string name="feels_like_label">Feels</string>
+    <string name="humidity_label">Humidity</string>
     <string name="aqi_label">AQI</string>
 
     <!-- Error states -->
-    <string name="error_network_failed">网络连接失败，请检查您的网络设置</string>
-    <string name="error_city_not_found">未找到该城市，请检查输入拼写是否正确</string>
-    <string name="error_unknown">发生未知错误，请重试</string>
+    <string name="error_network_failed">Network failed, please check your settings</string>
+    <string name="error_city_not_found">City not found, please check your spelling</string>
+    <string name="error_unknown">Unknown error occurred, please try again</string>
 
     <!-- Generic Units and formats -->
     <string name="temp_unit_celsius">°C</string>
@@ -98,4 +100,29 @@
     <string name="humidity_percent_format">%1$d%%</string>
     <string name="aqi_format">AQI %1$d</string>
     <string name="city_weather_desc_format">%1$s • %2$s</string>
+
+    <!-- Weather WMO Code Descriptions -->
+    <string name="weather_desc_sunny">Sunny</string>
+    <string name="weather_desc_mostly_sunny">Mostly Sunny</string>
+    <string name="weather_desc_cloudy">Cloudy</string>
+    <string name="weather_desc_overcast">Overcast</string>
+    <string name="weather_desc_fog">Fog</string>
+    <string name="weather_desc_drizzle">Drizzle</string>
+    <string name="weather_desc_freezing_drizzle">Freezing Drizzle</string>
+    <string name="weather_desc_light_rain">Light Rain</string>
+    <string name="weather_desc_moderate_rain">Moderate Rain</string>
+    <string name="weather_desc_heavy_rain">Heavy Rain</string>
+    <string name="weather_desc_freezing_rain">Freezing Rain</string>
+    <string name="weather_desc_light_snow">Light Snow</string>
+    <string name="weather_desc_moderate_snow">Moderate Snow</string>
+    <string name="weather_desc_heavy_snow">Heavy Snow</string>
+    <string name="weather_desc_snow_grains">Snow Grains</string>
+    <string name="weather_desc_light_showers">Light Showers</string>
+    <string name="weather_desc_moderate_showers">Moderate Showers</string>
+    <string name="weather_desc_heavy_showers">Heavy Showers</string>
+    <string name="weather_desc_light_snow_showers">Light Snow Showers</string>
+    <string name="weather_desc_heavy_snow_showers">Heavy Snow Showers</string>
+    <string name="weather_desc_thunderstorm">Thunderstorm</string>
+    <string name="weather_desc_thunderstorm_hail">Thunderstorm with Hail</string>
+    <string name="weather_desc_unknown">Unknown</string>
 </resources>

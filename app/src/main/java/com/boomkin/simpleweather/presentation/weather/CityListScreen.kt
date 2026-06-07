@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.City
 import com.boomkin.simpleweather.domain.model.WeatherType
+import com.boomkin.simpleweather.util.LocalizationUtil
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -212,7 +213,7 @@ fun CityListScreen(
                                             }
                                             Image(
                                                 painter = painterResource(id =weatherIconRes),
-                                                contentDescription = weather?.weatherDesc,
+                                                contentDescription = weather?.weatherDesc?.let { LocalizationUtil.localizeWeatherDesc(it) },
                                                 modifier = Modifier.size(24.dp)
                                             )
                                         }
@@ -253,7 +254,7 @@ fun CityListScreen(
                                                 }
                                             }
                                              Text(
-                                                 text = if (weather != null) stringResource(R.string.city_weather_desc_format, weather.weatherDesc, weather.weatherType.name) else stringResource(R.string.loading_text),
+                                                 text = if (weather != null) stringResource(R.string.city_weather_desc_format, LocalizationUtil.localizeWeatherDesc(weather.weatherDesc), weather.weatherType.name) else stringResource(R.string.loading_text),
                                                  color = Color.White.copy(alpha = 0.4f),
                                                  fontSize = 10.sp,
                                                  fontWeight = FontWeight.SemiBold,

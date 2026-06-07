@@ -29,6 +29,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.ForecastItem
 import com.boomkin.simpleweather.domain.model.HourlyForecastItem
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
+import com.boomkin.simpleweather.util.LocalizationUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -220,7 +221,7 @@ fun DailyForecastPanel(
                         ForecastIcon(desc = day.weatherDesc, sizeDp = 14f)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = day.weatherDesc,
+                            text = LocalizationUtil.localizeWeatherDesc(day.weatherDesc),
                             color = Color.White.copy(alpha = 0.7f),
                             fontSize = 10.sp,
                             maxLines = 1,

@@ -22,6 +22,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
+import com.boomkin.simpleweather.util.LocalizationUtil
 
 // ==========================
 // 英雄巨幅天气卡片
@@ -112,7 +113,7 @@ fun HeroWeatherBanner(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
-                            text = data.weatherDesc,
+                            text = LocalizationUtil.localizeWeatherDesc(data.weatherDesc),
                             color = Color.White,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
@@ -160,7 +161,7 @@ fun HeroWeatherBanner(
                     }
                     Image(
                         painter = painterResource(weatherIconRes),
-                        contentDescription = data.weatherDesc,
+                        contentDescription = LocalizationUtil.localizeWeatherDesc(data.weatherDesc),
                         modifier = Modifier.size(40.dp)
                     )
                 }

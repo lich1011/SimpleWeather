@@ -32,6 +32,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
 import com.boomkin.simpleweather.ui.theme.getWeatherTheme
+import com.boomkin.simpleweather.util.LocalizationUtil
 import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
@@ -328,7 +329,7 @@ fun CurrentLocationHeader(
                     .padding(horizontal = 10.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = data.weatherDesc,
+                    text = LocalizationUtil.localizeWeatherDesc(data.weatherDesc),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold

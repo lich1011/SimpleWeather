@@ -1,0 +1,128 @@
+<resources>
+    <string name="app_name">极简天气</string>
+
+    <!-- Widget -->
+    <string name="widget_loading_format">正在为 %1$s\n加载数据…</string>
+    <string name="widget_no_data">暂无天气信息\n请先在App内设置</string>
+    <string name="widget_feels_like_format">体感 %1$d°</string>
+    <string name="widget_humidity_format">湿度 %1$d%%</string>
+
+    <!-- City List Screen -->
+    <string name="city_manager_title">城市查询管理器</string>
+    <string name="search_city_placeholder">搜索并添加城市 (三亚、哈尔滨、北京...)</string>
+    <string name="add_city_button">添加</string>
+    <string name="preset_stations_title">内置区域气象台</string>
+    <string name="no_cities_found">暂无城市记录</string>
+    <string name="default_city_label">默认</string>
+    <string name="loading_text">加载中…</string>
+    <string name="delete_button">删除</string>
+
+    <!-- Weather Screen -->
+    <string name="select_city_prompt">请先在首页选择或搜索城市记录</string>
+    <string name="select_city_navigation_prompt">请先在首页选择或搜索添加城市记录</string>
+    <string name="back_button">返回</string>
+    <string name="viewing_city_label">当前城市</string>
+
+    <!-- Weather Bento Cards -->
+    <string name="wind_title">风速</string>
+    <string name="wind_strong">风力较强</string>
+    <string name="wind_gentle">微风徐徐</string>
+    <string name="humidity_title">湿度</string>
+    <string name="dew_point_format">露点温度约 %1$d°C</string>
+    <string name="dry_label">干燥</string>
+    <string name="optimum_label">适宜</string>
+    <string name="humid_label">潮湿</string>
+    <string name="uv_title">紫外线</string>
+    <string name="uv_very_weak">极弱</string>
+    <string name="uv_medium">中等</string>
+    <string name="uv_high">强</string>
+    <string name="uv_very_high">极强</string>
+    <string name="uv_level_format">紫外线强度：%1$s</string>
+    <string name="uv_advice_strong">建议物理防晒、佩戴墨镜</string>
+    <string name="uv_advice_weak">紫外线柔和，适合户外远足</string>
+    <string name="aqi_title">空气质量</string>
+    
+    <string name="aqi_excellent">优</string>
+    <string name="aqi_good">良</string>
+    <string name="aqi_moderate">轻度</string>
+    <string name="aqi_excellent_short">优</string>
+    <string name="aqi_good_short">良</string>
+    <string name="aqi_moderate_short">轻</string>
+    
+    <string name="aqi_unavailable">暂无数据</string>
+    <string name="aqi_unavailable_short">AQI -</string>
+    <string name="aqi_scale_excellent">0 (优)</string>
+    <string name="aqi_scale_good">100 (良)</string>
+    <string name="aqi_scale_bad">150+ (差)</string>
+    <string name="solar_cycle_title">日出日落</string>
+    <string name="sunrise">日出</string>
+    <string name="sunset">日落</string>
+    <string name="day_length_format">白昼时长约 %1$d 小时 %2$d 分钟</string>
+    <string name="golden_hour_label">黄金时刻在日落前 1 小时</string>
+
+    <!-- Safety Advice Card -->
+    <string name="safety_advice_title">Android 智能避险提示</string>
+    <string name="switch_city_button">切换其他区域气候</string>
+    <string name="safety_advice_storm">强雷电大风预警： 当前风力达 %1$.1fm/s 并伴有强雷暴闪电。请尽快寻找坚固遮蔽场所，避免户外运动、水边久留并注意雷电避险。</string>
+    <string name="safety_advice_snowy">大雪结冰预警： 室外体感降至 %1$d°C。路面积雪较深并有严重打滑现象，驾车请安装防滑链、减速慢行，老人小孩减少出门。</string>
+    <string name="safety_advice_sunny">紫外线极强提示： 阳光暴晒，建议涂抹物理防护霜、佩戴墨镜出行。多喝温水防止脱水，适合在清晨或傍晚散心。</string>
+    <string name="safety_advice_rainy">微风小雨提示： 细雨连绵，相对湿度 %1$d%%。出行记得携带好雨具，小心地面湿滑，雨天视线较差驾车需特别小心。</string>
+    <string name="safety_advice_cloudy">阴天多云气象： 光线十分温和柔雅，紫外线较弱。空气质量良好，非常适合户外散心、远足慢跑或去公园游玩放松。</string>
+
+    <!-- Hero Weather Banner -->
+    <string name="weather_overview_title">气象看板</string>
+    <string name="weather_detail_format">体感 %1$d°C / 湿度 %2$d%% / 风速 %3$.1fm/s</string>
+    <string name="today_temp_range_label">今日气温区间范围</string>
+
+    <!-- Forecast Panels -->
+    <string name="hourly_timeline_title">24小时逐时预报</string>
+    <string name="five_day_graph_title">未来 5 天降水与温差</string>
+
+    <!-- Today Details Card -->
+    <string name="today_details_title">今日气象详情</string>
+    <string name="expand_more_label">展开更多 ↗</string>
+    <string name="temp_label">气温</string>
+    <string name="feels_like_label">体感</string>
+    <string name="humidity_label">湿度</string>
+    <string name="aqi_label">AQI</string>
+
+    <!-- Error states -->
+    <string name="error_network_failed">网络连接失败，请检查您的网络设置</string>
+    <string name="error_city_not_found">未找到该城市，请检查输入拼写是否正确</string>
+    <string name="error_unknown">发生未知错误，请重试</string>
+
+    <!-- Generic Units and formats -->
+    <string name="temp_unit_celsius">°C</string>
+    <string name="wind_speed_unit"> m/s</string>
+    <string name="temp_degree_format">%1$d°</string>
+    <string name="temp_celsius_format">%1$d°C</string>
+    <string name="temp_range_format">%1$d°C ~ %2$d°C</string>
+    <string name="humidity_percent_format">%1$d%%</string>
+    <string name="aqi_format">AQI %1$d</string>
+    <string name="city_weather_desc_format">%1$s • %2$s</string>
+
+    <!-- Weather WMO Code Descriptions -->
+    <string name="weather_desc_sunny">晴</string>
+    <string name="weather_desc_mostly_sunny">大部晴朗</string>
+    <string name="weather_desc_cloudy">多云</string>
+    <string name="weather_desc_overcast">阴</string>
+    <string name="weather_desc_fog">雾</string>
+    <string name="weather_desc_drizzle">毛毛雨</string>
+    <string name="weather_desc_freezing_drizzle">冻毛毛雨</string>
+    <string name="weather_desc_light_rain">小雨</string>
+    <string name="weather_desc_moderate_rain">中雨</string>
+    <string name="weather_desc_heavy_rain">大雨</string>
+    <string name="weather_desc_freezing_rain">冻雨</string>
+    <string name="weather_desc_light_snow">小雪</string>
+    <string name="weather_desc_moderate_snow">中雪</string>
+    <string name="weather_desc_heavy_snow">大雪</string>
+    <string name="weather_desc_snow_grains">雪粒</string>
+    <string name="weather_desc_light_showers">小阵雨</string>
+    <string name="weather_desc_moderate_showers">中阵雨</string>
+    <string name="weather_desc_heavy_showers">大阵雨</string>
+    <string name="weather_desc_light_snow_showers">小阵雪</string>
+    <string name="weather_desc_heavy_snow_showers">大阵雪</string>
+    <string name="weather_desc_thunderstorm">雷暴</string>
+    <string name="weather_desc_thunderstorm_hail">雷暴伴冰雹</string>
+    <string name="weather_desc_unknown">未知</string>
+</resources>

@@ -454,9 +454,9 @@ fun AqiCard(
     val aqiValue = aqi ?: 0
     val aqiStatus = when {
         aqi == null -> stringResource(R.string.aqi_unavailable)
-        aqiValue <= 50 -> stringResource(R.string.aqi_excellent_en)
-        aqiValue <= 100 -> stringResource(R.string.aqi_good_en)
-        else -> stringResource(R.string.aqi_moderate_en)
+        aqiValue <= 50 -> stringResource(R.string.aqi_excellent)
+        aqiValue <= 100 -> stringResource(R.string.aqi_good)
+        else -> stringResource(R.string.aqi_moderate)
     }
     val aqiColor = when {
         aqi == null -> Color(0xFF94A3B8)
@@ -466,9 +466,9 @@ fun AqiCard(
     }
     val aqiLabel = when {
         aqi == null -> stringResource(R.string.aqi_unavailable_short)
-        aqiValue <= 50 -> stringResource(R.string.aqi_excellent_cn)
-        aqiValue <= 100 -> stringResource(R.string.aqi_good_cn)
-        else -> stringResource(R.string.aqi_moderate_cn)
+        aqiValue <= 50 -> stringResource(R.string.aqi_excellent_short)
+        aqiValue <= 100 -> stringResource(R.string.aqi_good_short)
+        else -> stringResource(R.string.aqi_moderate_short)
     }
 
     BentoCard(modifier = modifier.height(170.dp)) {

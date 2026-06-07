@@ -26,7 +26,7 @@ interface WeatherApi {
         @Query("timezone") timezone: String = "auto"
     ): OpenMeteoResponseDto
 
-    @GET("https://geocoding-api.open-meteo.com/v1/air_quality")
+    @GET("https://geocoding-api.open-meteo.com/v1/air-quality")
     suspend fun getAirQuality(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,

@@ -36,6 +36,7 @@ import com.boomkin.simpleweather.MainActivity
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import androidx.glance.LocalContext
+import com.boomkin.simpleweather.util.LocalizationUtil
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
@@ -249,7 +250,7 @@ class WeatherWidget : GlanceAppWidget() {
                     )
                 )
                 Text(
-                    text = weather.weatherDesc,
+                    text = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                     style = TextStyle(
                         color = ColorProvider(secondaryTextColor),
                         fontSize = 9.sp
@@ -262,7 +263,7 @@ class WeatherWidget : GlanceAppWidget() {
             ) {
                 Image(
                     provider = ImageProvider(iconRes),
-                    contentDescription = weather.weatherDesc,
+                    contentDescription = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                     modifier = GlanceModifier.size(24.dp)
                 )
                 Spacer(modifier = GlanceModifier.width(4.dp))
@@ -301,7 +302,7 @@ class WeatherWidget : GlanceAppWidget() {
                     )
                 )
                 Text(
-                    text = weather.weatherDesc,
+                    text = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                     style = TextStyle(
                         color = ColorProvider(secondaryTextColor),
                         fontSize = 10.sp
@@ -317,7 +318,7 @@ class WeatherWidget : GlanceAppWidget() {
             ) {
                 Image(
                     provider = ImageProvider(iconRes),
-                    contentDescription = weather.weatherDesc,
+                    contentDescription = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                     modifier = GlanceModifier.size(28.dp)
                 )
                 Spacer(modifier = GlanceModifier.width(6.dp))
@@ -384,7 +385,7 @@ class WeatherWidget : GlanceAppWidget() {
             ) {
                 Image(
                     provider = ImageProvider(iconRes),
-                    contentDescription = weather.weatherDesc,
+                    contentDescription = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                     modifier = GlanceModifier.size(36.dp)
                 )
                 Spacer(modifier = GlanceModifier.width(8.dp))
@@ -401,7 +402,7 @@ class WeatherWidget : GlanceAppWidget() {
             Spacer(modifier = GlanceModifier.height(4.dp))
 
             Text(
-                text = weather.weatherDesc,
+                text = LocalizationUtil.localizeWeatherDesc(weather.weatherDesc, context),
                 style = TextStyle(
                     color = ColorProvider(secondaryTextColor),
                     fontSize = 12.sp
