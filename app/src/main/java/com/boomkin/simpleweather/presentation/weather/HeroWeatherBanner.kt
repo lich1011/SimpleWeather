@@ -22,6 +22,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
+import com.boomkin.simpleweather.domain.model.isNight
 import com.boomkin.simpleweather.util.LocalizationUtil
 
 // ==========================
@@ -153,7 +154,10 @@ fun HeroWeatherBanner(
                     contentAlignment = Alignment.Center
                 ) {
                     val weatherIconRes = when (data.weatherType) {
-                        WeatherType.SUNNY -> R.drawable.vd_weather_sunny
+                        WeatherType.SUNNY -> {
+                            if (data.isNight()) R.drawable.vd_weather_night_clear
+                            else R.drawable.vd_weather_sunny
+                        }
                         WeatherType.RAINY -> R.drawable.vd_weather_rainy
                         WeatherType.SNOWY -> R.drawable.vd_weather_snowy
                         WeatherType.CLOUDY -> R.drawable.vd_weather_cloudy

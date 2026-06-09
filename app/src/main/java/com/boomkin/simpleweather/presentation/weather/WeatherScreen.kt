@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.Weather
+import com.boomkin.simpleweather.domain.model.isNight
 import com.boomkin.simpleweather.ui.theme.WeatherTheme
 import com.boomkin.simpleweather.ui.theme.getWeatherTheme
 import com.boomkin.simpleweather.util.LocalizationUtil
@@ -75,6 +76,7 @@ fun WeatherHomeScreen(
                 // 1. 底层沉浸式天气粒子背景
                 WeatherParticleBackground(
                     weatherType = weather.weatherType,
+                    isNight = weather.isNight(),
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -412,7 +414,7 @@ fun TodayDetailsCard(
                         stringResource(R.string.temp_label)
                     ),
                     Triple(
-                        painterResource(R.drawable.ic_compass),
+                        painterResource(R.drawable.ic_thermometer),
                         stringResource(R.string.temp_celsius_format, data.feelsLike.toInt()),
                         stringResource(R.string.feels_like_label)
                     ),

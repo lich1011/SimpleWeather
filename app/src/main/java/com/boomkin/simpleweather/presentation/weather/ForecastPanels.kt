@@ -67,6 +67,12 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
         ) {
             itemsIndexed(hourly) { _, hour ->
                 val displayTime = hour.time.substringAfter("T").take(5)
+                val hourVal = try {
+                    hour.time.substringAfter("T").take(2).toInt()
+                } catch (_: Exception) {
+                    12
+                }
+                val isNight = hourVal < 6 || hourVal >= 18
 
                 Column(
                     modifier = Modifier
@@ -93,7 +99,7 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
                             .background(Color.White.copy(alpha = 0.05f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        ForecastIcon(desc = hour.weatherDesc, sizeDp = 16f)
+                        ForecastIcon(desc = hour.weatherDesc, isNight = isNight, sizeDp = 16f)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -134,13 +140,17 @@ fun HourlyForecastPanel(hourly: List<HourlyForecastItem>) {
 fun ForecastIcon(
     desc: String,
     modifier: Modifier = Modifier,
+    isNight: Boolean = false,
     sizeDp: Float = 20f
 ) {
     val iconRes = when {
         desc.contains("雨", ignoreCase = true) || desc.contains("rain", ignoreCase = true) -> R.drawable.vd_weather_rainy
         desc.contains("雪", ignoreCase = true) || desc.contains("snow", ignoreCase = true) -> R.drawable.vd_weather_snowy
         desc.contains("雷", ignoreCase = true) || desc.contains("storm", ignoreCase = true) -> R.drawable.vd_weather_storm
-        desc.contains("晴", ignoreCase = true) || desc.contains("clear", ignoreCase = true) || desc.contains("sun", ignoreCase = true) -> R.drawable.vd_weather_sunny
+        desc.contains("晴", ignoreCase = true) || desc.contains("clear", ignoreCase = true) || desc.contains("sun", ignoreCase = true) -> {
+            if (isNight) R.drawable.vd_weather_night_clear
+            else R.drawable.vd_weather_sunny
+        }
         desc.contains("多云", ignoreCase = true) || desc.contains("cloud", ignoreCase = true) -> R.drawable.vd_weather_cloudy
         else -> R.drawable.vd_weather_cloudy
     }

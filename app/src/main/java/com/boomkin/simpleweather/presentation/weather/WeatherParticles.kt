@@ -40,12 +40,13 @@ private data class ComposeCloud(
 @Composable
 fun WeatherParticleBackground(
     weatherType: WeatherType,
+    isNight: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     // Game loop tick state
     var frameTick by remember { mutableLongStateOf(0L) }
     
-    LaunchedEffect(weatherType) {
+    LaunchedEffect(weatherType, isNight) {
         while (isActive) {
             withFrameMillis { ms ->
                 frameTick = ms
@@ -54,7 +55,7 @@ fun WeatherParticleBackground(
     }
 
     // Retain particles and animation values in state
-    val particles = remember(weatherType) { mutableStateListOf<ComposeParticle>() }
+    val particles = remember(weatherType, isNight) { mutableStateListOf<ComposeParticle>() }
     val clouds = remember(weatherType) { mutableStateListOf<ComposeCloud>() }
     var sunRaysAngle by remember { mutableFloatStateOf(0f) }
     var lightningFlash by remember { mutableFloatStateOf(0f) }
@@ -70,15 +71,17 @@ fun WeatherParticleBackground(
         if (particles.isEmpty() && clouds.isEmpty()) {
             when (weatherType) {
                 WeatherType.SUNNY -> {
-                    for (i in 0 until 20) {
+                    val count = if (isNight) 45 else 20
+                    for (i in 0 until count) {
                         particles.add(
                             ComposeParticle(
                                 x = Random.nextFloat() * width,
                                 y = Random.nextFloat() * height,
                                 vx = -0.2f + Random.nextFloat() * 0.4f,
                                 vy = -0.2f - Random.nextFloat() * 0.4f,
-                                radius = 4f + Random.nextFloat() * 15f,
-                                alpha = 0.05f + Random.nextFloat() * 0.15f
+                                radius = if (isNight) (1.5f + Random.nextFloat() * 2f) else (4f + Random.nextFloat() * 15f),
+                                alpha = if (isNight) (0.2f + Random.nextFloat() * 0.6f) else (0.05f + Random.nextFloat() * 0.15f),
+                                phase = Random.nextFloat() * (2 * PI.toFloat())
                             )
                         )
                     }
@@ -149,58 +152,118 @@ fun WeatherParticleBackground(
 
         when (weatherType) {
             WeatherType.SUNNY -> {
-                // 1. Draw Sky Gradient
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color(0xFF1A3C61), Color(0xFF2E547E), Color(0xFF1B324D))
+                if (isNight) {
+                    // 1. Draw Deep Night Sky Gradient
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color(0xFF0B0F19), Color(0xFF111827), Color(0xFF070A10))
+                        )
                     )
-                )
 
-                // 2. Draw Sun Source (Radial Glow) in top right
-                val sunCenter = Offset(width * 0.85f, height * 0.15f)
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        0.0f to Color(0x75FFEBAF),
-                        0.3f to Color(0x26FFDC82),
-                        1.0f to Color(0x00FFDC82),
+                    // 2. Draw Moon Source (Radial Glow) in top right
+                    val moonCenter = Offset(width * 0.85f, height * 0.15f)
+                    val moonRadius = 30f
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            0.0f to Color(0x33FDE68A),
+                            0.5f to Color(0x0DFDE68A),
+                            1.0f to Color.Transparent,
+                            center = moonCenter,
+                            radius = moonRadius * 4
+                        ),
+                        center = moonCenter,
+                        radius = moonRadius * 4
+                    )
+                    
+                    // Draw crescent moon by using clipPath / Path.combine
+                    val moonPath = Path().apply {
+                        addOval(androidx.compose.ui.geometry.Rect(moonCenter.x - moonRadius, moonCenter.y - moonRadius, moonCenter.x + moonRadius, moonCenter.y + moonRadius))
+                    }
+                    val clipPath = Path().apply {
+                        addOval(androidx.compose.ui.geometry.Rect(moonCenter.x - moonRadius - 10f, moonCenter.y - moonRadius - 8f, moonCenter.x + moonRadius - 10f, moonCenter.y + moonRadius - 8f))
+                    }
+                    val crescentPath = Path.combine(
+                        PathOperation.Difference,
+                        moonPath,
+                        clipPath
+                    )
+                    drawPath(
+                        path = crescentPath,
+                        color = Color(0xFFFEF08A) // Soft yellow moon
+                    )
+
+                    // 3. Draw & Update twinkling stars (instead of dust)
+                    particles.forEach { p ->
+                        // Make stars twinkle by modulating alpha based on time and phase
+                        val twinkleAlpha = p.alpha * (0.2f + 0.8f * sin(frameTick.toFloat() * 0.002f + p.phase).absoluteValue)
+                        drawCircle(
+                            color = Color.White.copy(alpha = twinkleAlpha),
+                            radius = p.radius * 0.4f,
+                            center = Offset(p.x, p.y)
+                        )
+                        // Slowly drift stars
+                        p.x += p.vx * 0.05f
+                        p.y += p.vy * 0.05f
+
+                        if (p.y < -30f || p.x < -30f || p.x > width + 30f || p.y > height + 30f) {
+                            p.y = Random.nextFloat() * height
+                            p.x = Random.nextFloat() * width
+                        }
+                    }
+                } else {
+                    // 1. Draw Sky Gradient
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color(0xFF1A3C61), Color(0xFF2E547E), Color(0xFF1B324D))
+                        )
+                    )
+
+                    // 2. Draw Sun Source (Radial Glow) in top right
+                    val sunCenter = Offset(width * 0.85f, height * 0.15f)
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            0.0f to Color(0x75FFEBAF),
+                            0.3f to Color(0x26FFDC82),
+                            1.0f to Color(0x00FFDC82),
+                            center = sunCenter,
+                            radius = 320f
+                        ),
                         center = sunCenter,
                         radius = 320f
-                    ),
-                    center = sunCenter,
-                    radius = 320f
-                )
-
-                // 3. Draw rotating Sunrays
-                sunRaysAngle += 0.001f
-                val rayCount = 24
-                for (r in 0 until rayCount) {
-                    val angle = (r * PI / 12).toFloat() + sunRaysAngle
-                    val length = 400f + sin(sunRaysAngle * 10f + r) * 40f
-                    val endOffset = Offset(
-                        sunCenter.x + cos(angle) * length,
-                        sunCenter.y + sin(angle) * length
                     )
-                    drawLine(
-                        color = Color(0x08FFF0BE),
-                        start = sunCenter,
-                        end = endOffset,
-                        strokeWidth = 1.5f
-                    )
-                }
 
-                // 4. Draw & Update ambient heat/dust particles
-                particles.forEach { p ->
-                    drawCircle(
-                        color = Color(0xFFFFEBB4).copy(alpha = p.alpha),
-                        radius = p.radius,
-                        center = Offset(p.x, p.y)
-                    )
-                    p.x += p.vx
-                    p.y += p.vy
+                    // 3. Draw rotating Sunrays
+                    sunRaysAngle += 0.001f
+                    val rayCount = 24
+                    for (r in 0 until rayCount) {
+                        val angle = (r * PI / 12).toFloat() + sunRaysAngle
+                        val length = 400f + sin(sunRaysAngle * 10f + r) * 40f
+                        val endOffset = Offset(
+                            sunCenter.x + cos(angle) * length,
+                            sunCenter.y + sin(angle) * length
+                        )
+                        drawLine(
+                            color = Color(0x08FFF0BE),
+                            start = sunCenter,
+                            end = endOffset,
+                            strokeWidth = 1.5f
+                        )
+                    }
 
-                    if (p.y < -30f || p.x < -30f || p.x > width + 30f) {
-                        p.y = height + 20f
-                        p.x = Random.nextFloat() * width
+                    // 4. Draw & Update ambient heat/dust particles
+                    particles.forEach { p ->
+                        drawCircle(
+                            color = Color(0xFFFFEBB4).copy(alpha = p.alpha),
+                            radius = p.radius,
+                            center = Offset(p.x, p.y)
+                        )
+                        p.x += p.vx
+                        p.y += p.vy
+
+                        if (p.y < -30f || p.x < -30f || p.x > width + 30f) {
+                            p.y = height + 20f
+                            p.x = Random.nextFloat() * width
+                        }
                     }
                 }
             }

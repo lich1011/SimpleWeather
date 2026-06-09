@@ -111,3 +111,12 @@ data class HourlyForecastItem(
     val humidity: Int,
     val windSpeed: Double
 )
+
+fun Weather.isNight(): Boolean {
+    if (sunrise == 0L || sunset == 0L) {
+        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
+        return hour < 6 || hour >= 18
+    }
+    val currentSec = timestamp / 1000
+    return currentSec < sunrise || currentSec > sunset
+}

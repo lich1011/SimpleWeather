@@ -35,6 +35,7 @@ import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.MainActivity
 import com.boomkin.simpleweather.domain.model.Weather
 import com.boomkin.simpleweather.domain.model.WeatherType
+import com.boomkin.simpleweather.domain.model.isNight
 import androidx.glance.LocalContext
 import com.boomkin.simpleweather.util.LocalizationUtil
 import androidx.glance.state.GlanceStateDefinition
@@ -45,6 +46,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.glance.currentState
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
@@ -59,6 +61,9 @@ object WeatherWidgetKeys {
     val KEY_FEELS_LIKE = doublePreferencesKey("feels_like")
     val KEY_HUMIDITY = intPreferencesKey("humidity")
     val KEY_TARGET_CITY_NAME = stringPreferencesKey("target_city_name")
+    val KEY_SUNRISE = longPreferencesKey("sunrise")
+    val KEY_SUNSET = longPreferencesKey("sunset")
+    val KEY_TIMESTAMP = longPreferencesKey("timestamp")
 }
 
 object WeatherWidgetStateUpdater {
@@ -77,6 +82,9 @@ object WeatherWidgetStateUpdater {
                         prefs[WeatherWidgetKeys.KEY_FEELS_LIKE] = weather.feelsLike
                         prefs[WeatherWidgetKeys.KEY_HUMIDITY] = weather.humidity
                         prefs[WeatherWidgetKeys.KEY_TARGET_CITY_NAME] = weather.cityName
+                        prefs[WeatherWidgetKeys.KEY_SUNRISE] = weather.sunrise
+                        prefs[WeatherWidgetKeys.KEY_SUNSET] = weather.sunset
+                        prefs[WeatherWidgetKeys.KEY_TIMESTAMP] = weather.timestamp
                     } else {
                         prefs[WeatherWidgetKeys.KEY_HAS_WEATHER] = false
                         if (targetCityName != null) {
@@ -127,11 +135,14 @@ class WeatherWidget : GlanceAppWidget() {
                 val tempCurrent = prefs[WeatherWidgetKeys.KEY_TEMP_CURRENT] ?: 0.0
                 val feelsLike = prefs[WeatherWidgetKeys.KEY_FEELS_LIKE] ?: 0.0
                 val humidity = prefs[WeatherWidgetKeys.KEY_HUMIDITY] ?: 0
+                val sunrise = prefs[WeatherWidgetKeys.KEY_SUNRISE] ?: 0L
+                val sunset = prefs[WeatherWidgetKeys.KEY_SUNSET] ?: 0L
+                val timestamp = prefs[WeatherWidgetKeys.KEY_TIMESTAMP] ?: 0L
 
                 Weather(
                     cityName = cityName,
                     country = "",
-                    timestamp = 0L,
+                    timestamp = timestamp,
                     date = "",
                     tempCurrent = tempCurrent,
                     tempMin = tempCurrent,
@@ -144,8 +155,8 @@ class WeatherWidget : GlanceAppWidget() {
                     weatherIcon = "",
                     weatherType = weatherType,
                     visibility = 0,
-                    sunrise = 0L,
-                    sunset = 0L
+                    sunrise = sunrise,
+                    sunset = sunset
                 )
             } else {
                 null
@@ -181,7 +192,10 @@ class WeatherWidget : GlanceAppWidget() {
         ) {
             if (weather != null) {
                 val iconRes = when (weather.weatherType) {
-                    WeatherType.SUNNY -> R.drawable.vd_weather_sunny
+                    WeatherType.SUNNY -> {
+                        if (weather.isNight()) R.drawable.vd_weather_night_clear
+                        else R.drawable.vd_weather_sunny
+                    }
                     WeatherType.RAINY -> R.drawable.vd_weather_rainy
                     WeatherType.SNOWY -> R.drawable.vd_weather_snowy
                     WeatherType.CLOUDY -> R.drawable.vd_weather_cloudy

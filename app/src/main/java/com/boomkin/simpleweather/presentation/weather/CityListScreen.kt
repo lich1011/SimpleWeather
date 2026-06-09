@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.boomkin.simpleweather.R
 import com.boomkin.simpleweather.domain.model.City
 import com.boomkin.simpleweather.domain.model.WeatherType
+import com.boomkin.simpleweather.domain.model.isNight
 import com.boomkin.simpleweather.util.LocalizationUtil
 import kotlin.math.absoluteValue
 
@@ -173,6 +174,7 @@ fun CityListScreen(
                                 if (weather != null) {
                                     WeatherParticleBackground(
                                         weatherType = weather.weatherType,
+                                        isNight = weather.isNight(),
                                         modifier = Modifier.matchParentSize()
                                     )
                                     // Subtle overlay for readability
@@ -204,7 +206,10 @@ fun CityListScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             val weatherIconRes = when (weather?.weatherType) {
-                                                WeatherType.SUNNY -> R.drawable.vd_weather_sunny
+                                                WeatherType.SUNNY -> {
+                                                    if (weather.isNight()) R.drawable.vd_weather_night_clear
+                                                    else R.drawable.vd_weather_sunny
+                                                }
                                                 WeatherType.RAINY -> R.drawable.vd_weather_rainy
                                                 WeatherType.SNOWY -> R.drawable.vd_weather_snowy
                                                 WeatherType.CLOUDY -> R.drawable.vd_weather_cloudy
